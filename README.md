@@ -1,6 +1,6 @@
 # MotifFinder: Find enriched motifs in a set of DNA sequences
 
-By Simon Myers & Nicholas Altemose
+By Simon Myers & Nicolas Altemose
 
 This is an R package for finding enriched motifs in a set of DNA sequences using an iterative Gibbs sampler described in [Altemose et al. eLife 2017](https://elifesciences.org/articles/28383).
 
