@@ -1,0 +1,64 @@
+---
+title: "MotifFinder: Vignette (Tutorial)"
+author: "Daniel Wells"
+date: "`r Sys.Date()`"
+output: github_document
+vignette: >
+  %\VignetteIndexEntry{MotifFinder: Vignette (Tutorial)}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include=FALSE}
+# rmarkdown::render("vignettes/vignette.Rmd")
+devtools::load_all()
+library(MotifFinder)
+```
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=10)
+```
+
+## Simulate Data
+We create 300 DNA sequences of length 200.
+Then we add the motif "ATGCATGA" to ~10% of the sequences at the center.
+
+```{r}
+# create random sequences
+sequences <- character(length = 300)
+for (i in seq_along(sequences)){
+  sequences[i] <- rep(paste(sample(c("A","T","G","C"), 200, T), collapse = ''))
+}
+
+# add enriched motif at position 101 to 108 of ~10% of sequences
+for (i in seq(from=1, to=length(sequences), by=10)){
+  substr(sequences[i],101,108) <- "ATGCATGA"
+}
+
+str(sequences)
+```
+
+# Run MotifFinder
+We run MotifFinder with a length slightly shorter than the known motif and uniform scores.
+
+```{r, results='hide'}
+motif_found <- findamotif(sequences, len=7, scores=rep(1,300))
+```
+
+## Plot the Motif(s) Found
+We can see that we have recovered the motif.
+
+```{r}
+
+scorematset=exp(motif_found$scoremat)
+compmat=scorematset[,c(4:1)]
+
+scorematset=scorematset/rowSums(scorematset)
+compmat=compmat/rowSums(compmat)
+
+pwm = t(scorematset)
+compmat=compmat[nrow(compmat):1,]
+
+seqLogo::seqLogo(t(compmat))
+seqLogo::seqLogo(pwm)
+```

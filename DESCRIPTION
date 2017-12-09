@@ -1,0 +1,15 @@
+Package: MotifFinder
+Title: A Bayesian, De Novo, Joint Motif Finder
+Version: 1.0
+Authors@R: c(person("Simon", "Myers", email = "myers@stats.ox.ac.uk", role = c("aut")), person("Nicholas", "Altemose", email = "", role = c("aut")), person("Daniel", "Wells", email = "wells@stats.ox.ac.uk", role = c("com","cre")))
+Description: If you use this program, please cite Altemose et al. eLife 2017
+Depends: R (>= 3.4.0)
+License: This is free software shared in the hope it may be of use; no warranty is given or implied
+Encoding: UTF-8
+LazyData: true
+Imports:
+	gtools,
+	seqLogo
+RoxygenNote: 6.0.1
+Roxygen: list(markdown = TRUE)
+VignetteBuilder: knitr
