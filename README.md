@@ -10,7 +10,7 @@ If you use this program, please cite [Altemose et al. eLife 2017](https://elifes
 
 This is free software shared in the hope it may be of use; no warranty is given or implied.
 
-## Installation
+## Installation & Usage
 
 ```R
 # install.packages("devtools")
