@@ -43,7 +43,12 @@
 #' @export
 #' @import gtools seqLogo
 
-findamotif=function(seqs,len,scores,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1){
+findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1){
+
+  if(is.null(scores)){
+    scores <- rep(1,length(seqs))
+  }
+
   if(n_for_refine>length(seqs)) n_for_refine=length(seqs)
   regs=seqs
   print("Concatenating sequences....")

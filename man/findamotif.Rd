@@ -4,8 +4,8 @@
 \alias{findamotif}
 \title{Find the single most enriched motif in a set of DNA sequences}
 \usage{
-findamotif(seqs, len, scores, nits = 100, ntries = 1, n_for_refine = 1000,
-  prior = NULL, updateprior = 1)
+findamotif(seqs, len, scores = NULL, nits = 100, ntries = 1,
+  n_for_refine = 1000, prior = NULL, updateprior = 1)
 }
 \arguments{
 \item{seqs}{a vector of strings giving the DNA sequences in which to find a motif}
