@@ -26,7 +26,7 @@ simulated_sequences <- simulate_sequences(motif="ATGCATGA")
 motif_found <- findamotif(simulated_sequences, len=7)
 
 # visualise the motif found
-seqLogo::seqLogo(get_PWM(motif_found))
+ggseqlogo::ggseqlogo(get_PWM(motif_found))
 ```
 
 ![](vignettes/vignette_files/figure-markdown_github/unnamed-chunk-4-1.png)

@@ -23,10 +23,11 @@ knitr::opts_chunk$set(fig.width=10)
 We create 300 DNA sequences of length 200 with the motif "ATGCATGA" at the center of 20% of the sequences.
 
 ```{r}
+library(MotifFinder)
 set.seed(42)
 simulated_sequences <- simulate_sequences(motif="ATGCATGA")
 
-str(sequences)
+str(simulated_sequences)
 ```
 
 # Run MotifFinder
@@ -40,6 +41,7 @@ motif_found <- findamotif(simulated_sequences, len=7)
 We can see that we have recovered the motif.
 
 ```{r}
-seqLogo::seqLogo(get_PWM(motif_found))
-seqLogo::seqLogo(get_PWM(motif_found, complement=TRUE))
+library(ggseqlogo)
+ggseqlogo(get_PWM(motif_found))
+ggseqlogo(get_PWM(motif_found, complement=TRUE))
 ```

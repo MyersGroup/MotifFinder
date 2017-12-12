@@ -23,6 +23,8 @@ get_PWM <- function(motif, complement=FALSE){
 
   pwm = t(pwm)
 
+  rownames(pwm) <- c("A","C","G","T")
+
   return(pwm)
 
 }

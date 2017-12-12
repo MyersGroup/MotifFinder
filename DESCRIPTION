@@ -9,7 +9,10 @@ Encoding: UTF-8
 LazyData: true
 Imports:
 	gtools,
+	ggseqlogo,
 	seqLogo
+Suggests:
+	knitr
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
