@@ -16,6 +16,8 @@ This is free software shared in the hope it may be of use; no warranty is given 
 # install.packages("devtools")
 devtools::install_github("myersgroup/MotifFinder")
 
+library(MotifFinder)
+
 # simulate set of sequences enriched for a motif
 set.seed(42)
 simulated_sequences <- simulate_sequences(motif="ATGCATGA")
