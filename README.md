@@ -15,6 +15,16 @@ This is free software shared in the hope it may be of use; no warranty is given 
 ```R
 # install.packages("devtools")
 devtools::install_github("myersgroup/MotifFinder")
+
+# simulate set of sequences enriched for a motif
+set.seed(42)
+simulated_sequences <- simulate_sequences(motif="ATGCATGA")
+
+# run MotifFinder
+motif_found <- findamotif(simulated_sequences, len=7)
+
+# visualise the motif found
+seqLogo::seqLogo(get_PWM(motif_found))
 ```
 
-For a quick tutorial on how to use this package please see the [vignette](vignettes/vignette.md).
+![](vignettes/vignette_files/figure-markdown_github/unnamed-chunk-4-1.png)
