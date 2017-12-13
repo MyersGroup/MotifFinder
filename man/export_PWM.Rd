@@ -2,9 +2,9 @@
 % Please edit documentation in R/auxiliary.R
 \name{export_PWM}
 \alias{export_PWM}
-\title{Export Position-Weight Matrix in uniprobe format}
+\title{Export Position-Weight Matrix to file}
 \usage{
-export_PWM(pwm, name, file, complement = FALSE)
+export_PWM(pwm, name, file, format = "meme", complement = FALSE)
 }
 \arguments{
 \item{pwm}{matrix; a PWM e.g. the output of get_PWM() OR the output of findamotif()}
@@ -13,9 +13,11 @@ export_PWM(pwm, name, file, complement = FALSE)
 
 \item{file}{character; path & filename to save file to e.g. "data/motif1.txt"}
 
+\item{format}{character; the file format to use, either "uniprobe" or "meme"}
+
 \item{complement}{logical; if input is a list from findamotif() should
 the motif be the reverse complment}
 }
 \description{
-Export Position-Weight Matrix in uniprobe format
+Export Position-Weight Matrix to file
 }
