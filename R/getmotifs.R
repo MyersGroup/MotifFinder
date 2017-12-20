@@ -15,6 +15,7 @@
 #' @param updatemot a flag - should the algorithm update (learn) the initial motifs (default is 1)
 #' @param updatealpha a flag - should the algorithm update (learn) the initial motifs (default is 1)
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)
+#' @param dt logical; should a data table of the results be returned
 #'
 #' @details
 #' Given a user-input set of initial PWMs and input sequences to identify motifs, run a Gibbs sampler to update these motifs, and output the results
@@ -51,13 +52,11 @@
 #' * whichstrand: for motifs identified in regions described in whichreg, the strand associated with motifs identified in the final round of sampling of the Gibbs sampler, relative to the input sequence
 #'
 #' @export
-#' @import gtools seqLogo
+#' @import gtools seqLogo data.table
 
-getmotifs=function(scorematset,dimvec ,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F){
+getmotifs=function(scorematset,dimvec ,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T){
   starttime=proc.time()
   its=0;
-
-  str(maxwidth)
 
   ### initialise vector of prior probabilities
   alphas=matrix(nrow=0,ncol=length(dimvec))
@@ -666,5 +665,16 @@ getmotifs=function(scorematset,dimvec ,seqs,maxwidth=800,alpha=0.5,incprob=0.999
     }
   } #ends iteration while loop
   cat(paste(proc.time()-starttime,"\n"))
-  return(list(seqs=origseqs,alphas=alphas,beststrand=beststrand, trimmedseqs=fullseqs,prior=prior,alpha=alpha,bindmat=bindmatset,scoremat=scorematset,scorematdim=dimvec,regprob=regprob,regprobs=regprobs,bestmatch=bestpos,whichregs=whichregs,whichpos=whichpos,background=qvec,whichmot=whichmot, whichstrand=strand))
+  z2 <- list(seqs=origseqs,alphas=alphas,beststrand=beststrand, trimmedseqs=fullseqs,prior=prior,alpha=alpha,bindmat=bindmatset,scoremat=scorematset,scorematdim=dimvec,regprob=regprob,regprobs=regprobs,bestmatch=bestpos,whichregs=whichregs,whichpos=whichpos,background=qvec,whichmot=whichmot, whichstrand=strand)
+
+  if(dt==T){
+    data_t <- data.table::rbindlist(list(z2[c("regprob")]))
+    data_t[, genes := names(z2$seqs)]
+    data_t[z2$whichregs, whichpos := z2$whichpos]
+    data_t[z2$whichregs, whichstrand := z2$whichstrand]
+    z2$dt <- data_t
+  }
+
+  return(z2)
+
 }
