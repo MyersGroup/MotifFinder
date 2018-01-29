@@ -178,5 +178,9 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   print("Scoring regions....")
   z2=getmotifs(z$scoremat,z$scorematdim,regs,maxwidth=max(nchar(regs)),alpha=z$alpha,incprob=0.99999,maxits=1,plen=0.2,updatemot=0,updatealpha=1,ourprior=z$prior,updateprior=0,bg=-1,plotting=F)
   print("....done")
+
+  z2$alphas <- z$alphas
+
   return(z2)
+
 }
