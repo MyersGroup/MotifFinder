@@ -15,6 +15,7 @@
 #' @param updatemot a flag - should the algorithm update (learn) the initial motifs (default is 1)
 #' @param updatealpha a flag - should the algorithm update (learn) the initial motifs (default is 1)
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)
+#' @param allowinf a flag - should infinite values be allowed in scoremat (not recommended, default is FALSE).
 #' @param dt logical; should a data table of the results be returned
 #'
 #' @details
@@ -54,9 +55,21 @@
 #' @export
 #' @import gtools seqLogo data.table
 
-getmotifs=function(scorematset,dimvec ,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T){
+getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T, allowinf=FALSE){
   starttime=proc.time()
   its=0;
+
+  if(ncol(scorematset)!=4){
+    stop("scorematset should be a matrix with four columns one for each of A,C,G, and T")
+  }
+
+  if(nrow(scorematset)!=sum(dimvec)){
+    stop("The number of rows in scorematset does not match the dimvec parameter")
+  }
+
+  if(any(!is.finite(scorematset))==TRUE & allowinf==FALSE){
+    stop("Scorematset should probably not contain infinite values, try adding pseudocounts to the PFM when creating your PWM or change the allowinf parameter to TRUE")
+  }
 
   ### initialise vector of prior probabilities
   alphas=matrix(nrow=0,ncol=length(dimvec))

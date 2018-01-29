@@ -7,7 +7,7 @@
 getmotifs(scorematset, dimvec, seqs, maxwidth = 800, alpha = 0.5,
   incprob = 0.99999, maxits = 30, plen = 0.05, updatemot = 1,
   updatealpha = 1, ourprior = NULL, updateprior = 1, bg = -1,
-  plotting = F, dt = T)
+  plotting = F, dt = T, allowinf = FALSE)
 }
 \arguments{
 \item{scorematset}{is a set of matrices, row-concatenated, giving pwms (log-scale) for the initialisation of the algorithm
@@ -40,6 +40,8 @@ scorematset is of dimension sum(dimvec)x4 and the first \code{dimvec[1]} rows of
 \item{plotting}{a parameter asking if run-time plots should be made.}
 
 \item{dt}{logical; should a data table of the results be returned}
+
+\item{allowinf}{a flag - should infinite values be allowed in scoremat (not recommended, default is FALSE).}
 }
 \value{
 The code returns detailed output as a list, whose elements are as follows (access these using commands like outputlist$scoremat)\cr
