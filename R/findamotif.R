@@ -9,6 +9,7 @@
 #' @param n_for_refine the top n_for_refine scoring regions only are used for motif refinement
 #' @param prior a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)?
+#' @param seed integer; seed for random number generation, set this for exactly reproducible results.
 #'
 #' @details
 #' This function identifies a single PWM from an iterative Gibbs sampler described in Altemose et al. eLife 2017. Function 2 can refine multiple motifs further, jointly.
@@ -44,7 +45,13 @@
 #' @export
 #' @import gtools seqLogo
 
-findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9){
+findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL){
+
+  if (is.null(seed)){
+    seed <- sample.int(2^20, 1)
+  }
+
+  set.seed(seed)
 
   if(is.null(scores)){
     scores <- rep(1,length(seqs))
@@ -172,14 +179,16 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   print("....done")
 
   print("Attempting to refine....")
-  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,plotting=F)
+  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,plotting=F,seed=NA)
   print("....done")
 
   print("Scoring regions....")
-  z2=getmotifs(z$scoremat,z$scorematdim,regs,maxwidth=max(nchar(regs)),alpha=z$alpha,incprob=0.99999,maxits=1,plen=0.2,updatemot=0,updatealpha=1,ourprior=z$prior,updateprior=0,bg=-1,plotting=F)
+  z2=getmotifs(z$scoremat,z$scorematdim,regs,maxwidth=max(nchar(regs)),alpha=z$alpha,incprob=0.99999,maxits=1,plen=0.2,updatemot=0,updatealpha=1,ourprior=z$prior,updateprior=0,bg=-1,plotting=F,seed=NA)
   print("....done")
 
   z2$alphas <- z$alphas
+
+  z2$seed <- as.integer(seed)
 
   return(z2)
 

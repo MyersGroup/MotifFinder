@@ -17,6 +17,7 @@
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)
 #' @param allowinf a flag - should infinite values be allowed in scoremat (not recommended, default is FALSE).
 #' @param dt logical; should a data table of the results be returned
+#' @param seed integer; seed for random number generation, set this for exactly reproducible results.
 #'
 #' @details
 #' Given a user-input set of initial PWMs and input sequences to identify motifs, run a Gibbs sampler to update these motifs, and output the results
@@ -42,6 +43,7 @@
 #' * alpha: a vector of probabilities giving the inferred probability of each motif being found within a single input region
 #' * bindmat:a version of scoremat accounting for the background sequence composition
 #' * background: the inferred background model
+#' * seed: random number generation seed used
 #'
 #' Details of output for given data
 #' * regprobs: a matrix giving the probability of each motif occurring in each given input sequence
@@ -55,7 +57,7 @@
 #' @export
 #' @import gtools seqLogo data.table
 
-getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T, allowinf=FALSE){
+getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T, allowinf=FALSE,seed=NULL){
   starttime=proc.time()
   its=0;
 
@@ -76,6 +78,14 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   if(length(alpha)!=length(dimvec)){
     print("Initialising fractions as uniform")
     alpha=rep(1/length(dimvec),length(dimvec))/2
+  }
+
+  if (is.null(seed)){
+    seed <- sample.int(2^20, 1)
+  }
+
+  if (!is.na(seed)){
+    set.seed(seed)
   }
 
   ###need later
@@ -678,7 +688,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     }
   } #ends iteration while loop
   cat(paste(proc.time()-starttime,"\n"))
-  z2 <- list(seqs=origseqs,alphas=alphas,beststrand=beststrand, trimmedseqs=fullseqs,prior=prior,alpha=alpha,bindmat=bindmatset,scoremat=scorematset,scorematdim=dimvec,regprob=regprob,regprobs=regprobs,bestmatch=bestpos,whichregs=whichregs,whichpos=whichpos,background=qvec,whichmot=whichmot, whichstrand=strand)
+  z2 <- list(seqs=origseqs,alphas=alphas,beststrand=beststrand, trimmedseqs=fullseqs,prior=prior,alpha=alpha,bindmat=bindmatset,scoremat=scorematset,scorematdim=dimvec,regprob=regprob,regprobs=regprobs,bestmatch=bestpos,whichregs=whichregs,whichpos=whichpos,background=qvec,whichmot=whichmot, whichstrand=strand,seed=as.integer(seed))
 
   if(dt==T){
     data_t <- data.table::rbindlist(list(z2[c("regprob")]))

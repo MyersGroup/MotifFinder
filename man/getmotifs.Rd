@@ -7,7 +7,7 @@
 getmotifs(scorematset, dimvec, seqs, maxwidth = 800, alpha = 0.5,
   incprob = 0.99999, maxits = 30, plen = 0.05, updatemot = 1,
   updatealpha = 1, ourprior = NULL, updateprior = 1, bg = -1,
-  plotting = F, dt = T, allowinf = FALSE)
+  plotting = F, dt = T, allowinf = FALSE, seed = NULL)
 }
 \arguments{
 \item{scorematset}{is a set of matrices, row-concatenated, giving pwms (log-scale) for the initialisation of the algorithm
@@ -42,6 +42,8 @@ scorematset is of dimension sum(dimvec)x4 and the first \code{dimvec[1]} rows of
 \item{dt}{logical; should a data table of the results be returned}
 
 \item{allowinf}{a flag - should infinite values be allowed in scoremat (not recommended, default is FALSE).}
+
+\item{seed}{integer; seed for random number generation, set this for exactly reproducible results.}
 }
 \value{
 The code returns detailed output as a list, whose elements are as follows (access these using commands like outputlist$scoremat)\cr
@@ -60,6 +62,7 @@ Details of overall fitted model:
 \item alpha: a vector of probabilities giving the inferred probability of each motif being found within a single input region
 \item bindmat:a version of scoremat accounting for the background sequence composition
 \item background: the inferred background model
+\item seed: random number generation seed used
 }
 
 Details of output for given data
