@@ -5,6 +5,7 @@
 #' @param scores a set of regional scores giving weights; e.g. ChIP-Seq enrichment values
 #' @param nits number of iterations used for motif refinement
 #' @param ntries usually leave at default, number of motifs to be attempted from list of possible starts
+#' @param plen a parameter setting the geometric prior on how long each motif found should be. plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more
 #' @param n_for_refine the top n_for_refine scoring regions only are used for motif refinement
 #' @param prior a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)?
@@ -43,7 +44,7 @@
 #' @export
 #' @import gtools seqLogo
 
-findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1){
+findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9){
 
   if(is.null(scores)){
     scores <- rep(1,length(seqs))
@@ -171,7 +172,7 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   print("....done")
 
   print("Attempting to refine....")
-  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=0.9,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,plotting=F)
+  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,plotting=F)
   print("....done")
 
   print("Scoring regions....")
