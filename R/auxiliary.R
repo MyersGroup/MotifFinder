@@ -64,3 +64,42 @@ export_PWM <- function(pwm, name, file, format="meme", complement=FALSE){
   message(paste("Motif exported to",file))
 
 }
+
+#' Download PWM from Jaspar or Hocomoco
+#'
+#' @param id string; The ID of the motif to download
+#' @param database string; Either "jaspar" or "hocomoco".
+#' @param pseudocount numeric; value of pseudocount to add to every entry of the PWM (to avoid 0 or 1 counts) (Applied for jaspar only)
+#'
+#' @return A PWM matrix
+#'
+#' @examples
+#' download_PWM("ALX1_MOUSE.H11MO.0.B", database="hocomoco")
+#'
+#' @import data.table jsonlite
+#' @export
+#'
+
+download_PWM <- function(id, database="jaspar", pseudocount=5){
+
+  if(database=="jaspar"){
+
+    pwm <- fread(paste0("http://jaspar.genereg.net/api/v1/matrix/",id,".pfm"))
+    pwm <- as.matrix(pwm + pseudocount) / colSums(pwm + pseudocount)
+    rownames(pwm) <- c("A", "C", "G", "T")
+    pwm <- t(pwm)
+
+  }else if(database=="hocomoco"){
+
+    pwm <- jsonlite::fromJSON(paste0("http://hocomoco11.autosome.ru/motif/",id,"/pwm.json"))
+    pwm <- as.matrix(pwm)
+    colnames(pwm) <- c("A", "C", "G", "T")
+    pwm <- exp(pwm)
+
+  }else{
+    warning("database not recognised should be either 'jaspar' or 'hocomoco'")
+  }
+
+  return(pwm)
+
+}

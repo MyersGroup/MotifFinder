@@ -10,7 +10,9 @@ LazyData: true
 Imports:
 	gtools,
 	ggseqlogo,
-	seqLogo
+	seqLogo,
+	data.table,
+	jsonlite
 Suggests:
 	knitr
 RoxygenNote: 6.0.1
