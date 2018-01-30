@@ -118,6 +118,9 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   maxwidth=max(this)
   for(i in 1:length(seqs)) if(this[i]<max(this)) seqs[i]=paste(seqs[i],substring(temp,1,(max(this)-this[i])),sep="")
 
+  seqs_matrix <- matrix(unlist(strsplit(seqs,""), use.names = FALSE), ncol=maxwidth, byrow=TRUE)
+  mode(seqs_matrix) <- "numeric"
+
   ####begin iteration!
   while(its<maxits){
     print("Setting up")
@@ -144,7 +147,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     posmat=overallscores
     for(i in 1:maxwidth) posmat[,i]=i
-    for(i in 1:maxwidth) newmat[,i]=as.numeric(substring(seqs,i,i)) #nick moved out of for loop
+    newmat <- seqs_matrix
 
     print("...done")
 
