@@ -103,3 +103,41 @@ download_PWM <- function(id, database="jaspar", pseudocount=5){
   return(pwm)
 
 }
+
+#' Convert PWM matrix to text (character string)
+#'
+#' @param pwm matrix; n by 4 matrix of log scale numeric values
+#' @param treshold numeric; value between 0.5 and 1 to determine when to display capital vs lowercase letter.
+#'
+#' @return A charachter string
+#'
+#' @examples
+#' pwm2text(position_weight_matrix)
+#'
+#' @import data.table jsonlite
+#' @export
+#'
+
+pwm2text <- function(pwm, threshold=0.7){
+
+  if(ncol(pwm)!=4){stop("The PWM shuold be a n by 4 matrix")}
+  if(threshold<0.5){stop("Threshold should be >= 0.5 in order to chose a single letter at each position.")}
+
+  # get column index of best nucleotide (with >0.5)
+  tmp <- as.numeric(apply(pwm, 1,function(x) which(x == max(x) & x>log(0.5))))
+
+  # which nt have a value lower than the threshold
+  which_small <- pwm[cbind(1:nrow(pwm),tmp)] < log(threshold)
+  which_small[is.na(which_small)] <- FALSE
+
+  # add 4 to the index so they get small letters
+  tmp[which_small] <-  tmp[which_small] + 4
+
+  dna <- c("A","C","G","T","a","c","g","t")
+
+  tmp <- dna[tmp]
+  tmp[is.na(tmp)] <- "_"
+  tmp <- paste(tmp, collapse="")
+  return(tmp)
+
+}
