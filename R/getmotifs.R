@@ -284,10 +284,16 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     print("Putting in background information for the probability of each motif")
     for(j in 1:length(starts)){
       scoremat=scorematset[starts[j]:ends[j],]
+
+      cols = ncol(background) - nrow(scoremat) + 1
+      background_tmp <- background[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j), 1:cols]
+      newqvec_index <- matrix(newqvec[as.double(index)], nrow=nrow(index))
+
       for(i in 1:nrow(scoremat)){
-        cols=ncol(background)-nrow(scoremat)+1
-        background[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),1:cols]=background[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),1:cols]+matrix(newqvec[as.double(index[,i:(i+cols-1)])],nrow=nrow(index))
+        background_tmp <- background_tmp + newqvec_index[,i:(i+cols-1)]
       }
+
+      background[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),1:cols] <- background_tmp
     }
     print("Done")
 
