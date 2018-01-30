@@ -6,7 +6,7 @@
 \usage{
 findamotif(seqs, len, scores = NULL, nits = 100, ntries = 1,
   n_for_refine = 1000, prior = NULL, updateprior = 1, plen = 0.9,
-  seed = NULL)
+  seed = NULL, verbosity = 1)
 }
 \arguments{
 \item{seqs}{a vector of strings giving the DNA sequences in which to find a motif}
@@ -28,6 +28,8 @@ findamotif(seqs, len, scores = NULL, nits = 100, ntries = 1,
 \item{plen}{a parameter setting the geometric prior on how long each motif found should be. plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more}
 
 \item{seed}{integer; seed for random number generation, set this for exactly reproducible results.}
+
+\item{verbosity}{integer; How verbose should this function be? 0=silent, 3=everything.}
 }
 \value{
 List item with the following items:\cr

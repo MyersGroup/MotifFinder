@@ -10,6 +10,7 @@
 #' @param prior a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)?
 #' @param seed integer; seed for random number generation, set this for exactly reproducible results.
+#' @param verbosity integer; How verbose should this function be? 0=silent, 3=everything.
 #'
 #' @details
 #' This function identifies a single PWM from an iterative Gibbs sampler described in Altemose et al. eLife 2017. Function 2 can refine multiple motifs further, jointly.
@@ -45,7 +46,7 @@
 #' @export
 #' @import gtools seqLogo
 
-findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL){
+findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1){
 
   if (is.null(seed)){
     seed <- sample.int(2^20, 1)
@@ -59,11 +60,11 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
 
   if(n_for_refine>length(seqs)) n_for_refine=length(seqs)
   regs=seqs
-  print("Concatenating sequences....")
+  if(verbosity>=3) print("Concatenating sequences....")
   seqs=paste(seqs,collapse="")
-  print("....done")
+  if(verbosity>=3) print("....done")
 
-  print("Replacing DNA letters with numbers....")
+  if(verbosity>=3) print("Replacing DNA letters with numbers....")
   seqv=as.vector(unlist(strsplit(seqs,"")))
   seqv=gsub("A","0",seqv)
   seqv=gsub("C","1",seqv)
@@ -75,23 +76,23 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   seqv=gsub("t","7",seqv)
   seqv=gsub("N","8",seqv)
   seqv=as.integer(seqv)
-  print("....done")
+  if(verbosity>=3) print("....done")
 
-  print("Indexing....")
+  if(verbosity>=3) print("Indexing....")
   nonrep=rep(0,(length(seqv)-len+1))
   for(i in 1:len){
-    print(i)
+    if(verbosity>=3) print(i)
     z=seqv[i:(i+length(nonrep)-1)]
     nonrep=nonrep+4^(len-i)*z
     nonrep[z>3]=-Inf
   }
   nonrep2=nonrep[!is.infinite(nonrep)]+1
-  print("....done")
+  if(verbosity>=3) print("....done")
 
-  print("Counting motifs....")
+  if(verbosity>=3) print("Counting motifs....")
   res=1:(4^len)*0
   for(i in 1:length(nonrep2)){
-    if(!i%%100000) print(i)
+    if(!i%%100000) if(verbosity>=3) print(i)
     res[nonrep2[i]]=res[nonrep2[i]]+1
   }
   bases=c("A","C","G","T")
@@ -101,9 +102,9 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   ournamesc=""
   for(i in 1:len) ournamesc=c(paste(ournamesc,bases[4],sep=""),paste(ournamesc,bases[3],sep=""),paste(ournamesc,bases[2],sep=""),paste(ournamesc,bases[1],sep=""))
   restot=res+res[ournamesc]
-  print("....done")
+  if(verbosity>=3) print("....done")
 
-  print("Finding potential starts....")
+  if(verbosity>=3) print("Finding potential starts....")
   lookups=order(-restot)[1:200]
   restot=restot[lookups]
   seqs=ournames[lookups]
@@ -111,7 +112,7 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   seqs=seqs[restot>10]
   seqsc=seqsc[restot>10]
   if(!length(seqs)){
-    print("No motif to start from is in above 10 sequences")
+    if(verbosity>=3) print("No motif to start from is in above 10 sequences")
     return(0)
   }
   pos=1
@@ -124,9 +125,9 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
     }
     pos=pos+1
   }
-  print("....done")
+  if(verbosity>=3) print("....done")
 
-  print("Checking for central enrichment....")
+  if(verbosity>=3) print("Checking for central enrichment....")
   mids=nchar(regs)/2
   range=50
   reg2=regs[nchar(regs)>=mids+range & mids-range>=1]
@@ -135,7 +136,7 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   enrich=1:length(seqs)
   excess=enrich
   for(i in 1:length(seqs)){
-    print(i)
+    if(verbosity>=3) print(i)
     mot=seqs[i]
     motc=seqsc[i]
     ourset=unique(c(grep(mot,midregs),grep(motc,midregs)))
@@ -156,14 +157,14 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   seqsc=seqsc[enrich>1]
   enrich=enrich[enrich>1]
   if(!length(enrich)) {
-    print("No motif to start from is centrally enriched")
+    if(verbosity>=3) print("No motif to start from is centrally enriched")
     return(0)
   }
   mot=seqs[order(-excess)][1]
-  print("....done. Chose start motif:")
-  print(mot)
+  if(verbosity>=1) print("Chose start motif:")
+  if(verbosity>=1) print(mot)
 
-  print("Initialising....")
+  if(verbosity>=3) print("Initialising....")
   mot=as.vector(unlist(strsplit(mot,"")))
   mot[mot=="A"]=1
   mot[mot=="C"]=2
@@ -176,15 +177,15 @@ findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,pri
   logpwm=log(pwmstart)
 
   seqtemp=regs[order(-scores)][1:n_for_refine]
-  print("....done")
+  if(verbosity>=3) print("....done")
 
-  print("Attempting to refine....")
-  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,plotting=F,seed=NA)
-  print("....done")
+  if(verbosity>=3) print("Attempting to refine....")
+  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,plotting=F,seed=NA,verbosity=verbosity)
+  if(verbosity>=3) print("....done")
 
-  print("Scoring regions....")
-  z2=getmotifs(z$scoremat,z$scorematdim,regs,maxwidth=max(nchar(regs)),alpha=z$alpha,incprob=0.99999,maxits=1,plen=0.2,updatemot=0,updatealpha=1,ourprior=z$prior,updateprior=0,bg=-1,plotting=F,seed=NA)
-  print("....done")
+  if(verbosity>=3) print("Scoring regions....")
+  z2=getmotifs(z$scoremat,z$scorematdim,regs,maxwidth=max(nchar(regs)),alpha=z$alpha,incprob=0.99999,maxits=1,plen=0.2,updatemot=0,updatealpha=1,ourprior=z$prior,updateprior=0,bg=-1,plotting=F,seed=NA,verbosity=0)
+  if(verbosity>=3) print("....done")
 
   z2$alphas <- z$alphas
 

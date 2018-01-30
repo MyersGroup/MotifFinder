@@ -18,6 +18,7 @@
 #' @param allowinf a flag - should infinite values be allowed in scoremat (not recommended, default is FALSE).
 #' @param dt logical; should a data table of the results be returned
 #' @param seed integer; seed for random number generation, set this for exactly reproducible results.
+#' @param verbosity integer; How verbose should this function be? 0=silent, 3=everything.
 #'
 #' @details
 #' Given a user-input set of initial PWMs and input sequences to identify motifs, run a Gibbs sampler to update these motifs, and output the results
@@ -57,7 +58,7 @@
 #' @export
 #' @import gtools seqLogo data.table
 
-getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T, allowinf=FALSE,seed=NULL){
+getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T, allowinf=FALSE,seed=NULL,verbosity=1){
   starttime=proc.time()
   its=0;
 
@@ -76,7 +77,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   ### initialise vector of prior probabilities
   alphas=matrix(nrow=0,ncol=length(dimvec))
   if(length(alpha)!=length(dimvec)){
-    print("Initialising fractions as uniform")
+    if(verbosity>=3) print("Initialising fractions as uniform")
     alpha=rep(1/length(dimvec),length(dimvec))/2
   }
 
@@ -102,7 +103,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   this=nchar(seqs)
   statement=paste("Removing ",sum(this>maxwidth)," long regions with over ",maxwidth, " characters, of ", length(this)," regions in total (", sum(this>maxwidth)/length(this),"%).",sep="")
 
-  print(statement)
+  if(verbosity>=3) print(statement)
   seqs=seqs[this<=maxwidth]
   this=this[this<=maxwidth]
   fullseqs=seqs
@@ -112,7 +113,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   seqs=gsub("T","4",seqs)
   seqs=gsub("N","5",seqs)
 
-  print("Padding with N's to equalize size")
+  if(verbosity>=3) print("Padding with N's to equalize size")
   temp=rep("5",maxwidth)
   temp=paste(temp,collapse="")
   maxwidth=max(this)
@@ -123,7 +124,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
   ####begin iteration!
   while(its<maxits){
-    print("Setting up")
+    if(verbosity>=3) print("Setting up")
     ###get start and end positions of each motif within the score matrix. note need to do this each time, as size of things can change
 
     starts=c(1,cumsum(dimvec)+1)
@@ -136,7 +137,11 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     scores=newmat
     scores2=newmat
     its=its+1
-    print(paste("Iteration number ",its,sep=""))
+    if(verbosity>=2){
+      print(paste("Iteration number ",its,sep=""))
+    }else if(verbosity>=1){ # at verbosity level 1, only iters and text motifs are printed, so put them on the same line
+      cat(paste0("Iteration: ",sprintf("%02d", its),", "))
+    }
 
     if(its==1 | updatemot==1){ #note this is different from original
       overallscores=matrix(0,nrow=length(seqs)*length(starts),ncol=maxwidth)
@@ -149,7 +154,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     for(i in 1:maxwidth) posmat[,i]=i
     newmat <- seqs_matrix
 
-    print("...done")
+    if(verbosity>=3) print("...done")
 
 
     ###scoremat now just prob of each base given binding
@@ -158,11 +163,11 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     for(j in 1:length(starts)){
       scoremat=scorematset[starts[j]:ends[j],]
-      print(scoremat)
+      if(verbosity>=3) print(scoremat)
       scoremat=cbind(scoremat,rep(-10000,nrow(scoremat))) #nick removed pointless maxwidth=200 setting
       compmat=scoremat[,c(4:1,5)]
       compmat=compmat[nrow(compmat):1,]
-      print(paste("Beginning scoring for Motif",j))
+      if(verbosity>=3) print(paste("Beginning scoring for Motif",j))
       if(updatemot==1 | its==1){
         startrange=seq(1,maxwidth-nrow(scoremat)+1)
         maxes=max(startrange)-1
@@ -170,18 +175,18 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
           if(i==1) scores=matrix(scoremat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
           else scores=scores+matrix(scoremat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
         }
-        print("Complement")
+        if(verbosity>=3) print("Complement")
         scores2=matrix(0,nrow=nrow(newmat),ncol=length(startrange))
         for(i in 1:nrow(scoremat)){
           if(i==1) scores2=matrix(compmat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
           else scores2=scores2+matrix(compmat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
         }
-        print("Overall")
+        if(verbosity>=3) print("Overall")
 
         overall=scores
         overall[scores2>scores]=scores2[scores2>scores]
 
-        print("Finding best positions")
+        if(verbosity>=3) print("Finding best positions")
         for(i in 1:nrow(overall)){
           bestpos[i,j]=sample(c(which(overall[i,]==max(overall[i,])),which(overall[i,]==max(overall[i,]))),1)
           score1=scores[i,bestpos[i,j]]
@@ -189,7 +194,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
           beststrand[i,j]=1
           if(score2>score1) beststrand[i,j]=0
         }
-        print("Next motif")
+        if(verbosity>=3) print("Next motif")
         overallscores[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]=-1e9
         overallscores[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),1:ncol(scores)]=scores
         overallscores2[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]=-1e9
@@ -204,7 +209,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       overallscores2=overallscores2+background
     }
 
-    print("Background finding")
+    if(verbosity>=3) print("Background finding")
 
     if(its==1){
       ###index each sequence by its triplet
@@ -219,11 +224,11 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     if(length(bg)==1){
       if(length(qvec)==0){
-        print("Setting up background....")
+        if(verbosity>=3) print("Setting up background....")
         bg=1:64*0
         bg2=matrix(0,nrow=length(seqs),ncol=length(bg))
         for(i in 1:length(seqs)){
-          if(!i%%1000){ print(i);print(bg);}
+          if(!i%%1000){ if(verbosity>=3) print(i);if(verbosity>=3) print(bg);}
           temp=substring(seqs[i],1,nchar(fullseqs[i]))
           temp=substring(temp,1:nchar(temp),1:nchar(temp))
           temp=as.numeric(temp)
@@ -237,7 +242,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
           }
           bg=bg+bg2[i,]
         }
-        print("...done")
+        if(verbosity>=3) print("...done")
         ####allow either strand because under null don't expect this to matter
         ####just getting triplet probs
 
@@ -279,9 +284,9 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     ###now add up to give the background equivalent to the length of the motif
     background=background*0
     background[is.na(background)]=0
-    print(dim(index))
-    print(dim(scores))
-    print("Putting in background information for the probability of each motif")
+    if(verbosity>=3) print(dim(index))
+    if(verbosity>=3) print(dim(scores))
+    if(verbosity>=3) print("Putting in background information for the probability of each motif")
     for(j in 1:length(starts)){
       scoremat=scorematset[starts[j]:ends[j],]
 
@@ -295,20 +300,20 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
       background[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),1:cols] <- background_tmp
     }
-    print("Done")
+    if(verbosity>=3) print("Done")
 
-    print(range(overallscores))
-    print(range(overallscores2))
-    print(range(background))
+    if(verbosity>=3) print(range(overallscores))
+    if(verbosity>=3) print(range(overallscores2))
+    if(verbosity>=3) print(range(background))
     overallscores=overallscores-background
     overallscores2=overallscores2-background
-    print(range(overallscores))
-    print(range(overallscores2))
+    if(verbosity>=3) print(range(overallscores))
+    if(verbosity>=3) print(range(overallscores2))
 
     ###assume a uniform prob. inside regions at first then infer
     ###priorprobs are just a set of densities
 
-    print("Applying prior matrix")
+    if(verbosity>=3) print("Applying prior matrix")
     priormat=overallscores
 
     priormat=scores*0
@@ -322,7 +327,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
         prior=prior/sum(prior)
       }
     }
-    print("...OK...")
+    if(verbosity>=3) print("...OK...")
 
     ##define priormat - note only have to correctly get "proportion" along
 
@@ -332,12 +337,12 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       scoremat=scorematset[starts[j]:ends[j],]
       endpos[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j)]=nchar(fullseqs[(1):(nrow(newmat))])-nrow(scoremat)+1
     }
-    print("...OK3...")
+    if(verbosity>=3) print("...OK3...")
 
     priormat=posmat/endpos
     priormat[priormat>1]=0
     priormat=priormat-1/endpos
-    print("...OK4...")
+    if(verbosity>=3) print("...OK4...")
 
     priormat=floor(priormat*10)+1
     for(i in 1:10) priormat[priormat==i]=prior[i]
@@ -347,15 +352,15 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     scoremat=scorematset
 
-    print("Done")
-    print("Setting up sampling probabilities for motifs")
+    if(verbosity>=3) print("Done")
+    if(verbosity>=3) print("Setting up sampling probabilities for motifs")
     postforward=exp(overallscores)
     postbackward=exp(overallscores2)
     for(j in 1:length(starts)){
       priormat[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]=priormat[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]*alpha[j];
     }
 
-    print("Calculating probabilities")
+    if(verbosity>=3) print("Calculating probabilities")
     postforward=postforward*priormat
     postbackward=postbackward*priormat
 
@@ -365,8 +370,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       temp=postbackward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]
       postbackward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]=temp
     }
-    print("Done")
-    print("Making sampling matrix")
+    if(verbosity>=3) print("Done")
+    if(verbosity>=3) print("Making sampling matrix")
     samplemat=matrix(nrow=nrow(newmat),ncol=ncol(postforward)*length(starts)*2)
     s=ncol(postforward)
     for(j in 1:length(starts)){
@@ -376,8 +381,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     samplemat=samplemat/(rowSums(samplemat)+(1-sum(alpha)))
     ###enables sampling
 
-    print("Done")
-    print("Sampling")
+    if(verbosity>=3) print("Done")
+    if(verbosity>=3) print("Sampling")
     ######sample
     q=runif(nrow(samplemat))
 
@@ -393,7 +398,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     regprob=rowSums(regprobs)
     mot=q*0
 
-    print("Picking positions within regions")
+    if(verbosity>=3) print("Picking positions within regions")
     whichcol=mot*0
     testmat=samplemat
     for(j in 2:ncol(samplemat)){
@@ -410,7 +415,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     whichmot=whichmot[mot==1]
     whichpos=whichpos[mot==1]
     whichstrand=whichstrand[mot==1]
-    print("Done")
+    if(verbosity>=3) print("Done")
 
     #######get a prior on positions
     ######update prior using sampled positions
@@ -426,8 +431,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     ######sample start pos
 
     alphanew=alphanew[1:length(starts)]
-    print("Alpha values sampled:")
-    print(c(alphanew,sum(alphanew)))
+    if(verbosity>=3) print("Alpha values sampled:")
+    if(verbosity>=3) print(c(alphanew,sum(alphanew)))
     whichregs=which(mot==1)
 
     v=hist((whichpos-1)/(nchar(fullseqs[whichregs])-dimvec[whichmot]),breaks=seq(0,1,0.1),plot=plotting)
@@ -438,7 +443,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     ####for compatibility
     strand=whichstrand
-    print("Sampling sequences")
+    if(verbosity>=3) print("Sampling sequences")
     ###get sequences, to make a new motif
     ###background model is going to be based on the overall - inconsistent otherwise
     ###so we'll successively subtract the motif occurrences
@@ -452,12 +457,12 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     newbackground=matrix(0,nrow=length(starts),ncol=64)
     for(j in 1:length(starts)){
-      print(paste("Updating Motif",j,"counts"))
+      if(verbosity>=3) print(paste("Updating Motif",j,"counts"))
       scoremat=scorematset[starts[j]:ends[j],]
       tempregs=whichregs[whichmot==j]
       newbackground[j,]=colSums(bg2[whichregs[whichmot==j],])
 
-      print(newbackground[j,])
+      if(verbosity>=3) print(newbackground[j,])
       tempstarts=whichpos[whichmot==j]
       tempends=tempstarts+nrow(scoremat)-1
       tempstrand=whichstrand[whichmot==j]
@@ -483,7 +488,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       ####this gives us counts - now need to get likelihood under a background model
       ####enables us to sample a new motif in a relatively "principled" manner
 
-      print("Building background model...")
+      if(verbosity>=3) print("Building background model...")
       newtemp=16*(ourseqs[,1:(ncol(ourseqs)-2)]-1)+4*(ourseqs[,2:(ncol(ourseqs)-1)]-1)+(ourseqs[,3:(ncol(ourseqs)-0)]-1)
       newtemp[ourseqs[,1:(ncol(ourseqs)-2)]==5]=-1
       newtemp[ourseqs[,2:(ncol(ourseqs)-1)]==5]=-1
@@ -491,7 +496,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       newtemp=newtemp+1
       motcounts=matrix(ncol=ncol(newtemp),nrow=64)
       for(i in 1:64) motcounts[i,]=colSums(newtemp==i)
-      print("...done")
+      if(verbosity>=3) print("...done")
 
       bg=bg-rowSums(motcounts)
       ourcounts=cbind(ourcounts,rbind(motcounts,j))
@@ -557,7 +562,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       expsummary=t(expcounts)
       summary2=summary/expsummary*rowSums(expcounts)
       noninclogprob=colSums(summary*t(log(expcounts)))
-      print("Calculating likelihood terms")
+      if(verbosity>=3) print("Calculating likelihood terms")
       ###have a uniform prior for bases included, four bases
       ########need likelihood for an included base
       ###uniform dirichlet prior leads to following posterior after integrating out frequencies
@@ -619,8 +624,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     ####remove motifs if not viable
     if(min(length(fullseqs)*alpha)<=10){
-      print("Some motifs have <=10 expected copies, removing")
-      print(which(length(fullseqs)*alpha<=10))
+      if(verbosity>=3) print("Some motifs have <=10 expected copies, removing")
+      if(verbosity>=3) print(which(length(fullseqs)*alpha<=10))
       newmat=matrix(nrow=0,ncol=4)
       newmat2=matrix(nrow=0,ncol=4)
       newstarts=c(1,cumsum(dimvec)+1)
@@ -640,9 +645,9 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     ####remove motifs if not long enough
     if(min(dimvec)<=3){
       remo=which(dimvec<=3)
-      print("Some motifs have length <=3, removing")
-      print(remo)
-      print(dimvec[remo])
+      if(verbosity>=3) print("Some motifs have length <=3, removing")
+      if(verbosity>=3) print(remo)
+      if(verbosity>=3) print(dimvec[remo])
       newmat=matrix(nrow=0,ncol=4)
       newmat2=matrix(nrow=0,ncol=4)
       newstarts=c(1,cumsum(dimvec)+1)
@@ -656,8 +661,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
       scorematset=newmat
       ####remove offending motif
-      print(dim(alphas))
-      print(length(dimvec))
+      if(verbosity>=3) print(dim(alphas))
+      if(verbosity>=3) print(length(dimvec))
       alphas=alphas[,dimvec>3]
       alpha=alpha[dimvec>3]
       dimvec=dimvec[dimvec>3]
@@ -695,8 +700,12 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
         popViewport()
       }
     }
+
+    # Print motif
+    if(verbosity>=1) cat(paste0("Motif: '",pwm2text(scorematset),"'\n"))
+
   } #ends iteration while loop
-  cat(paste(proc.time()-starttime,"\n"))
+  if(verbosity>=1) print(proc.time() - starttime)
   z2 <- list(seqs=origseqs,alphas=alphas,beststrand=beststrand, trimmedseqs=fullseqs,prior=prior,alpha=alpha,bindmat=bindmatset,scoremat=scorematset,scorematdim=dimvec,regprob=regprob,regprobs=regprobs,bestmatch=bestpos,whichregs=whichregs,whichpos=whichpos,background=qvec,whichmot=whichmot, whichstrand=strand,seed=as.integer(seed))
 
   if(dt==T){
