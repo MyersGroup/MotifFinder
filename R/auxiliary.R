@@ -141,3 +141,56 @@ pwm2text <- function(pwm, threshold=0.7){
   return(tmp)
 
 }
+
+#' Plot location of motifs in input sequences
+#'
+#' @param found_motif list; The output of getmotifs()
+#' @param linepos integer; position of line in plot to mark e.g. the TSS
+#'
+#' @return A ggplot2 object
+#'
+#' @import data.table ggplot2 RColorBrewer
+#' @export
+#'
+
+plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL){
+
+  tmp <- found_motif$dt[!is.na(whichpos)]
+
+  for (i in seq_along(found_motif$scorematdim)){
+    tmp[whichmotif==i, motifend := whichpos + found_motif$scorematdim[i]]
+  }
+
+  tmp[,whichstrand := as.factor(whichstrand)]
+  tmp[,whichmotif := factor(whichmotif)]
+  if(!is.null(names(found_motif$scorematdim))){
+    levels(tmp$whichmotif) <- names(found_motif$scorematdim)
+  }
+  tmp[,maxregprob := max(regprob),by=sequence]
+
+  if(!is.null(top_n)){
+    tmp <- tmp[order(-maxregprob)][1:top_n]
+  }
+
+  tmp$seqID <- as.numeric(factor(tmp$sequence, levels=unique(tmp[order(maxregprob)]$sequence)))
+
+  if(length(found_motif$scorematdim)>1){
+    plot_glob <- ggplot(tmp, aes(whichpos, seqID, colour=whichmotif))
+    transparency_alpha <- 0.5
+  }else{
+    plot_glob <- ggplot(tmp, aes(whichpos, seqID, colour=whichstrand))
+    transparency_alpha <- 1
+  }
+
+  if(!is.null(linepos)){
+    plot_glob <- plot_glob + geom_vline(xintercept = linepos)
+  }
+
+  plot_glob <- plot_glob +
+    geom_segment(aes(x = whichpos, y = seqID, xend = motifend, yend = seqID), size=1, alpha=transparency_alpha) +
+    scale_color_brewer(palette = "Set1") +
+    labs(x="Position in Sequence (bp)", y="Sequence / Gene") +
+    theme(legend.position = "bottom")
+
+  return(plot_glob)
+}
