@@ -691,11 +691,16 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   z2 <- list(seqs=origseqs,alphas=alphas,beststrand=beststrand, trimmedseqs=fullseqs,prior=prior,alpha=alpha,bindmat=bindmatset,scoremat=scorematset,scorematdim=dimvec,regprob=regprob,regprobs=regprobs,bestmatch=bestpos,whichregs=whichregs,whichpos=whichpos,background=qvec,whichmot=whichmot, whichstrand=strand,seed=as.integer(seed))
 
   if(dt==T){
-    data_t <- data.table::rbindlist(list(z2[c("regprob")]))
-    data_t[, genes := names(z2$seqs)]
-    data_t[z2$whichregs, whichpos := z2$whichpos]
-    data_t[z2$whichregs, whichstrand := z2$whichstrand]
-    z2$dt <- data_t
+    dt_all <- data.table(regprob = c(z2$regprobs),
+                         sequence = rep(names(z2$seqs),ncol(z2$regprobs)),
+                         whichmotif = rep(1:ncol(z2$regprobs),each=nrow(z2$regprobs)))
+
+    dt_regulated <- data.table(sequence = names(z2$seqs)[z2$whichregs],
+                               whichpos = z2$whichpos,
+                               whichmotif = z2$whichmot,
+                               whichstrand = z2$whichstrand)
+
+    z2$dt <- merge(dt_all, dt_regulated, by=c("sequence","whichmotif"), all.x=T)
   }
 
   return(z2)
