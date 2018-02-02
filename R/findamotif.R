@@ -46,7 +46,7 @@
 #' @export
 #' @import gtools seqLogo
 
-findamotif=function(seqs,len,scores=NULL,nits=100,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1){
+findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1){
 
   if (is.null(seed)){
     seed <- sample.int(2^20, 1)

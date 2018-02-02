@@ -4,7 +4,7 @@
 \alias{findamotif}
 \title{Find the single most enriched motif in a set of DNA sequences}
 \usage{
-findamotif(seqs, len, scores = NULL, nits = 100, ntries = 1,
+findamotif(seqs, len, scores = NULL, nits = 50, ntries = 1,
   n_for_refine = 1000, prior = NULL, updateprior = 1, plen = 0.9,
   seed = NULL, verbosity = 1)
 }
