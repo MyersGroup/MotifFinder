@@ -20,12 +20,12 @@ knitr::opts_chunk$set(fig.width=10)
 ```
 
 ## Simulate Data
-We create 300 DNA sequences of length 200 with the motif "ATGCATGA" at the center of 20% of the sequences.
+We create 300 DNA sequences of length 200 with the motif "ATgTT_GtCC" around the center of 50% of the sequences.
 
-```{r}
+```{r simulate}
 library(MotifFinder)
 set.seed(42)
-simulated_sequences <- simulate_sequences(motif="ATGCATGA")
+simulated_sequences <- simulate_sequences(motif="ATgTT_GtCC")
 
 str(simulated_sequences)
 ```
@@ -33,15 +33,37 @@ str(simulated_sequences)
 # Run MotifFinder
 We run MotifFinder with a length slightly shorter than the known motif length.
 
-```{r, results='hide'}
+```{r findmotif, results='hide'}
 motif_found <- findamotif(simulated_sequences, len=7)
 ```
 
 ## Plot the Motif(s) Found
 We can see that we have recovered the motif.
 
-```{r}
+```{r plotlogo}
 library(ggseqlogo)
 ggseqlogo(get_PWM(motif_found))
 ggseqlogo(get_PWM(motif_found, complement=TRUE))
 ```
+
+## Where is the motif
+We can also check the location of the motif found.
+
+```{r plotlocation}
+plot_motif_location(motif_found)
+```
+
+
+## Check Convergence
+It's a good idea to plot the inferred probability the motif being in each sequence (alpha parameter) for each iteration to check convergence.
+
+```{r plotalpha}
+plot(motif_found$alphas)
+```
+
+Other helper functions include downloading PWMs from the Jaspar or Hocomoco databases.
+```{r donwloadPWM}
+Ascl2 <- download_PWM("MA0816.1")
+str(Ascl2)
+```
+
