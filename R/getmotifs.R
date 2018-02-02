@@ -11,7 +11,6 @@
 #' @param plen a parameter setting the geometric prior on how long each motif found should be. plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more
 #' @param ourprior a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.
 #' @param bg should be left at default value normally (technical parameter setting background model)
-#' @param plotting a parameter asking if run-time plots should be made.
 #' @param updatemot a flag - should the algorithm update (learn) the initial motifs (default is 1)
 #' @param updatealpha a flag - should the algorithm update (learn) the initial motifs (default is 1)
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)
@@ -56,9 +55,9 @@
 #' * whichstrand: for motifs identified in regions described in whichreg, the strand associated with motifs identified in the final round of sampling of the Gibbs sampler, relative to the input sequence
 #'
 #' @export
-#' @import gtools seqLogo data.table
+#' @import gtools data.table
 
-getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,plotting=F, dt=T, allowinf=FALSE,seed=NULL,verbosity=1){
+getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,dt=T, allowinf=FALSE,seed=NULL,verbosity=1){
   starttime=proc.time()
   its=0;
 
@@ -435,7 +434,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(verbosity>=3) print(c(alphanew,sum(alphanew)))
     whichregs=which(mot==1)
 
-    v=hist((whichpos-1)/(nchar(fullseqs[whichregs])-dimvec[whichmot]),breaks=seq(0,1,0.1),plot=plotting)
+    v=hist((whichpos-1)/(nchar(fullseqs[whichregs])-dimvec[whichmot]),breaks=seq(0,1,0.1),plot=FALSE)
     if(updateprior==1){
       prior=v$counts+5
       prior=prior/sum(prior)
@@ -668,36 +667,9 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       dimvec=dimvec[dimvec>3]
     }
 
-    ###plot logos
-    if(plotting){
-      length=length(dimvec)
-      if(length%%3 !=0) length=length+3-(length %%3)
-      rowcount=length/3
-      #library("seqLogo")
-      mySeqLogo = seqLogo::seqLogo
-      bad = (sapply( body(mySeqLogo), "==", "grid.newpage()") | sapply( body(mySeqLogo), "==", "par(ask = FALSE)"))
-      body(mySeqLogo)[bad] = NULL
-
-      yvec=vector(length=0)
-      for(i in 1:(length/3)) yvec=c(yvec,rep(1.2/length+(i-1)*3/length,3))
-      xvec=c(0.1666667, 0.5000000, 0.8333333)
-      xvec=rep(xvec,length=length)
-
-      newstarts=c(1,cumsum(dimvec)+1)
-      newends=cumsum(dimvec)
-      grid.newpage()
-
-      for(i in 1:length(dimvec)){
-        testmat=scorematset[newstarts[i]:newends[i],]
-        testmat=exp(testmat)
-        testmat=testmat/rowSums(testmat)
-        norm = function(x) scale(x, center=FALSE, scale=colSums(x))
-        pwm = t(testmat)
 
 
-        pushViewport(viewport(x=xvec[i],y=yvec[i], width=0.8/2, height=1.2/rowcount,))
-        mySeqLogo(pwm)
-        popViewport()
+
       }
     }
 

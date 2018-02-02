@@ -6,8 +6,8 @@
 \usage{
 getmotifs(scorematset, dimvec, seqs, maxwidth = 800, alpha = 0.5,
   incprob = 0.99999, maxits = 30, plen = 0.05, updatemot = 1,
-  updatealpha = 1, ourprior = NULL, updateprior = 1, bg = -1,
-  plotting = F, dt = T, allowinf = FALSE, seed = NULL, verbosity = 1)
+  updatealpha = 1, ourprior = NULL, updateprior = 1, bg = -1, dt = T,
+  allowinf = FALSE, seed = NULL, verbosity = 1)
 }
 \arguments{
 \item{scorematset}{is a set of matrices, row-concatenated, giving pwms (log-scale) for the initialisation of the algorithm
@@ -36,8 +36,6 @@ scorematset is of dimension sum(dimvec)x4 and the first \code{dimvec[1]} rows of
 \item{updateprior}{a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)}
 
 \item{bg}{should be left at default value normally (technical parameter setting background model)}
-
-\item{plotting}{a parameter asking if run-time plots should be made.}
 
 \item{dt}{logical; should a data table of the results be returned}
 

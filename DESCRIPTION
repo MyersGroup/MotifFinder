@@ -10,7 +10,6 @@ LazyData: true
 Imports:
 	gtools,
 	ggseqlogo,
-	seqLogo,
 	data.table,
 	jsonlite
 Suggests:
