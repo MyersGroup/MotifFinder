@@ -5,7 +5,8 @@
 \title{Simulate DNA sequences with an enriched motif}
 \usage{
 simulate_sequences(motif, number_sequences = 300, sequence_length = 200,
-  motif_position = NULL, enrichment = 0.2)
+  motif_position = NULL, enrichment = 0.5, jitter = 10, highprob = 0.85,
+  lowprob = 0.6)
 }
 \arguments{
 \item{motif}{character; string containing the motif sequence}
@@ -17,6 +18,12 @@ simulate_sequences(motif, number_sequences = 300, sequence_length = 200,
 \item{motif_position}{numeric; start position of the motif in the sequences}
 
 \item{enrichment}{numeric; what fraction of sequences should include the motif}
+
+\item{jitter}{integer; how variable should the position of the motif be}
+
+\item{highprob}{numeric; probability (between 0 and 1) of choosing a base when the motif has a capital/uppercase letter}
+
+\item{lowprob}{numeric; probability (between 0 and 1) of choosing a base when the motif has a lowercase letter}
 }
 \value{
 a character vector of random DNA sequences with an enriched motif
