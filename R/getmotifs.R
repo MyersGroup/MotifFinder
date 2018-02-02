@@ -667,17 +667,27 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       dimvec=dimvec[dimvec>3]
     }
 
+    # Print motif
 
+    if(verbosity>=1){
+    newstarts=c(1,cumsum(dimvec)+1)
+    newends=cumsum(dimvec)
 
+    motif_text <- pwm2text(scorematset[newstarts[1]:newends[1],])
 
+    if(length(dimvec)>1){
+      for(i in 2:length(dimvec)){
+        motif_text = paste(motif_text,"|",pwm2text(scorematset[newstarts[i]:newends[i],]))
       }
     }
 
-    # Print motif
-    if(verbosity>=1) cat(paste0("Motif: '",pwm2text(scorematset),"'\n"))
+    cat(paste0("Motif(s): '",motif_text,"'\n"))
+    }
 
   } #ends iteration while loop
+
   if(verbosity>=1) print(proc.time() - starttime)
+
   z2 <- list(seqs=origseqs,alphas=alphas,beststrand=beststrand, trimmedseqs=fullseqs,prior=prior,alpha=alpha,bindmat=bindmatset,scoremat=scorematset,scorematdim=dimvec,regprob=regprob,regprobs=regprobs,bestmatch=bestpos,whichregs=whichregs,whichpos=whichpos,background=qvec,whichmot=whichmot, whichstrand=strand,seed=as.integer(seed))
 
   if(dt==T){
