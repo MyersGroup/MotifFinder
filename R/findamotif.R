@@ -52,7 +52,9 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
     seed <- sample.int(2^20, 1)
   }
 
-  set.seed(seed)
+  if (!is.na(seed)){
+    set.seed(seed)
+  }
 
   if(is.null(scores)){
     scores <- rep(1,length(seqs))
