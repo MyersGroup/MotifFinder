@@ -121,6 +121,11 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   seqs_matrix <- matrix(unlist(strsplit(seqs,""), use.names = FALSE), ncol=maxwidth, byrow=TRUE)
   mode(seqs_matrix) <- "numeric"
 
+  if(sum(is.na(seqs_matrix))){
+    warning("Sequences should only contain A,C,G,T or N", call. = FALSE)
+    return(NULL)
+  }
+
   ####begin iteration!
   while(its<maxits){
     if(verbosity>=3) print("Setting up")
