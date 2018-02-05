@@ -638,26 +638,6 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       cat(paste0("Motif(s): '",motif_text,"'\n"))
     }
 
-    ####remove motifs if not viable
-    if(min(length(fullseqs)*alpha)<=10){
-      if(verbosity>=1) print("Some motifs have <=10 expected copies, removing")
-      if(verbosity>=1) print(which(length(fullseqs)*alpha<=10))
-      newmat=matrix(nrow=0,ncol=4)
-      newmat2=matrix(nrow=0,ncol=4)
-      newstarts=c(1,cumsum(dimvec)+1)
-      newends=cumsum(dimvec)
-      for(i in 1:length(dimvec)) if(length(fullseqs)*alpha[i]>10){
-        newmat=rbind(newmat,scorematset[newstarts[i]:newends[i],])
-        newmat2=rbind(newmat2,bindmatset[newstarts[i]:newends[i],])
-      }
-      scorematset=newmat
-      bindmatset=newmat2
-      dimvec=dimvec[length(fullseqs)*alpha>10]
-      ####remove offending motif
-      alphas=alphas[,length(fullseqs)*alpha>10]
-      alpha=alpha[length(fullseqs)*alpha>10]
-    }
-
     ####remove motifs if not long enough
     if(min(dimvec)<=3){
       remo=which(dimvec<=3)
@@ -688,6 +668,30 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       dimvec=dimvec[dimvec>3]
     }
 
+    ####remove motifs if not viable
+    if(min(length(fullseqs)*alpha)<=10){
+      if(verbosity>=1) print("Some motifs have <=10 expected copies, removing")
+      if(verbosity>=1) print(paste("Expected copies per motif:",round(length(fullseqs)*alpha,2)))
+      if(all(length(fullseqs)*alpha<=10)){
+        warning("No motifs remaining!", call.=FALSE)
+        return(NULL)
+      }
+
+      newmat=matrix(nrow=0,ncol=4)
+      newmat2=matrix(nrow=0,ncol=4)
+      newstarts=c(1,cumsum(dimvec)+1)
+      newends=cumsum(dimvec)
+      for(i in 1:length(dimvec)) if(length(fullseqs)*alpha[i]>10){
+        newmat=rbind(newmat,scorematset[newstarts[i]:newends[i],])
+        newmat2=rbind(newmat2,bindmatset[newstarts[i]:newends[i],])
+      }
+      scorematset=newmat
+      bindmatset=newmat2
+      dimvec=dimvec[length(fullseqs)*alpha>10]
+      ####remove offending motif
+      alphas=alphas[,length(fullseqs)*alpha>10]
+      alpha=alpha[length(fullseqs)*alpha>10]
+    }
 
   } #ends iteration while loop
 
