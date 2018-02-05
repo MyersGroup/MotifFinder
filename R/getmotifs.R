@@ -621,6 +621,23 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     }
     alphas=rbind(alphas,alpha)
 
+    # Print motif
+
+    if(verbosity>=1){
+      newstarts=c(1,cumsum(dimvec)+1)
+      newends=cumsum(dimvec)
+
+      motif_text <- pwm2text(scorematset[newstarts[1]:newends[1],])
+
+      if(length(dimvec)>1){
+        for(i in 2:length(dimvec)){
+          motif_text = paste(motif_text,"|",pwm2text(scorematset[newstarts[i]:newends[i],]))
+        }
+      }
+
+      cat(paste0("Motif(s): '",motif_text,"'\n"))
+    }
+
     ####remove motifs if not viable
     if(min(length(fullseqs)*alpha)<=10){
       if(verbosity>=3) print("Some motifs have <=10 expected copies, removing")
@@ -667,22 +684,6 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       dimvec=dimvec[dimvec>3]
     }
 
-    # Print motif
-
-    if(verbosity>=1){
-    newstarts=c(1,cumsum(dimvec)+1)
-    newends=cumsum(dimvec)
-
-    motif_text <- pwm2text(scorematset[newstarts[1]:newends[1],])
-
-    if(length(dimvec)>1){
-      for(i in 2:length(dimvec)){
-        motif_text = paste(motif_text,"|",pwm2text(scorematset[newstarts[i]:newends[i],]))
-      }
-    }
-
-    cat(paste0("Motif(s): '",motif_text,"'\n"))
-    }
 
   } #ends iteration while loop
 
