@@ -640,8 +640,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     ####remove motifs if not viable
     if(min(length(fullseqs)*alpha)<=10){
-      if(verbosity>=3) print("Some motifs have <=10 expected copies, removing")
-      if(verbosity>=3) print(which(length(fullseqs)*alpha<=10))
+      if(verbosity>=1) print("Some motifs have <=10 expected copies, removing")
+      if(verbosity>=1) print(which(length(fullseqs)*alpha<=10))
       newmat=matrix(nrow=0,ncol=4)
       newmat2=matrix(nrow=0,ncol=4)
       newstarts=c(1,cumsum(dimvec)+1)
@@ -661,9 +661,13 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     ####remove motifs if not long enough
     if(min(dimvec)<=3){
       remo=which(dimvec<=3)
-      if(verbosity>=3) print("Some motifs have length <=3, removing")
-      if(verbosity>=3) print(remo)
-      if(verbosity>=3) print(dimvec[remo])
+      if(verbosity>=1) print("Some motifs have length <=3, removing")
+      if(verbosity>=1) print(paste("Motif Lengths:",dimvec))
+      if(sum(dimvec>3)==0){
+        warning("No motifs remaining!", call.=FALSE)
+        return(NULL)
+      }
+
       newmat=matrix(nrow=0,ncol=4)
       newmat2=matrix(nrow=0,ncol=4)
       newstarts=c(1,cumsum(dimvec)+1)
