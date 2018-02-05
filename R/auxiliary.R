@@ -212,3 +212,21 @@ mask_motif <- function(found_motif,motif=1){
   return(found_motif)
 }
 
+#' Export character vector to file in FASTA format
+#'
+#' @param sequences named character vector; Sequences to be exported
+#' @param file string; Filename and path for sequences to be saved in
+#'
+#' @return Nothing, file written to disk.
+#'
+#' @examples
+#'
+#' dna <- c(seqA="ATGCTAG",seqB="ATCGATGTT",seqC="TCGATCGAT")
+#' export_FASTA(dna, "dna.fasta")
+#' @export
+#'
+
+export_FASTA <- function(sequences, file){
+  names(sequences) <- paste0(">",names(sequences))
+  write.table(c(rbind(names(sequences), sequences)), file, row.names = FALSE, col.names = FALSE, quote = FALSE)
+}
