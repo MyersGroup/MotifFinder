@@ -194,3 +194,21 @@ plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL){
 
   return(plot_glob)
 }
+
+#' Mask occurrences of motif
+#'
+#' @param found_motif list; The output of getmotifs()
+#' @param motif integer; Which motif to mask if there is more than one in the found_motif list.
+#'
+#' @return Same as output of getmotifs() but with motifs removed.
+#'
+#' @export
+#'
+
+mask_motif <- function(found_motif,motif=1){
+  str_sub(found_motif$seqs[found_motif$whichregs],
+          start = found_motif$whichpos,
+          end = found_motif$whichpos + found_motif$scorematdim[i] - 1) <- paste(rep("N", found_motif$scorematdim[i]), collapse = "")
+  return(found_motif)
+}
+
