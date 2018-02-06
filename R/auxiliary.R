@@ -208,7 +208,7 @@ plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL){
 mask_motif <- function(found_motif,motif=1){
   str_sub(found_motif$seqs[found_motif$whichregs],
           start = found_motif$whichpos,
-          end = found_motif$whichpos + found_motif$scorematdim[i] - 1) <- paste(rep("N", found_motif$scorematdim[i]), collapse = "")
+          end = found_motif$whichpos + found_motif$scorematdim[motif] - 1) <- paste(rep("N", found_motif$scorematdim[motif]), collapse = "")
   return(found_motif)
 }
 
