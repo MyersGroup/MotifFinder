@@ -619,7 +619,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(updatealpha==1) alpha=alphanew
 
     if(updatemot==1){
-      scorematset=newmatset[,1:4]
+      scorematset=newmatset[,1:4, drop=FALSE]
       dimvec=newnewdim
     }else {
       scorematset=scorematset[,1:4]
@@ -632,7 +632,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       newstarts=c(1,cumsum(dimvec)+1)
       newends=cumsum(dimvec)
 
-      motif_text <- pwm2text(scorematset[newstarts[1]:newends[1],])
+      motif_text <- pwm2text(scorematset[newstarts[1]:newends[1],,drop=FALSE])
 
       if(length(dimvec)>1){
         for(i in 2:length(dimvec)){
