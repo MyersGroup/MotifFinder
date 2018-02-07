@@ -46,7 +46,7 @@
 #' @export
 #' @import gtools
 
-findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1){
+findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1, motif_rank=1,force_mot=NULL,motif_blacklist=NULL){
 
   if (is.null(seed)){
     seed <- sample.int(2^20, 1)
@@ -114,7 +114,7 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
   seqs=seqs[restot>10]
   seqsc=seqsc[restot>10]
   if(!length(seqs)){
-    if(verbosity>=3) print("No motif to start from is in above 10 sequences")
+    if(verbosity>=3) print("No motif to start from is in more than 10 sequences")
     return(0)
   }
   pos=1
@@ -162,9 +162,19 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
     if(verbosity>=3) print("No motif to start from is centrally enriched")
     return(0)
   }
-  mot=seqs[order(-excess)][1]
+
+  #return(seqs)
+
+  if(verbosity>=1) print("Top 5 start motifs:")
+  if(verbosity>=1) print(seqs[order(-excess)[1:5]])
+
+  mot = seqs[order(-excess)][!seqs[order(-excess)] %in% motif_blacklist][motif_rank]
   if(verbosity>=1) print("Chose start motif:")
   if(verbosity>=1) print(mot)
+
+  if(!is.null(force_mot)){
+    mot=force_mot
+  }
 
   if(verbosity>=3) print("Initialising....")
   mot=as.vector(unlist(strsplit(mot,"")))
