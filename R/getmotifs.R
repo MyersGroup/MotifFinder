@@ -640,7 +640,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
         }
       }
 
-      cat(paste0("Motif(s): '",motif_text,"'\n"))
+      cat(paste0("Alpha: ",round(alpha,2),", Motif(s): '",motif_text,"'\n"))
     }
 
     ####remove motifs if not long enough
