@@ -673,6 +673,36 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       dimvec=dimvec[dimvec>3]
     }
 
+    ####remove motifs if too long
+    if(max(dimvec)>=maxwidth/2){
+      remo=which(dimvec>=maxwidth/2)
+      if(verbosity>=1) print("Some motifs have length >=maxwidth/2, removing")
+      if(verbosity>=1) print(paste("Motif Lengths:",dimvec))
+      if(sum(dimvec>3)==0){
+        warning("No motifs remaining!", call.=FALSE)
+        return(NULL)
+      }
+
+      newmat=matrix(nrow=0,ncol=4)
+      newmat2=matrix(nrow=0,ncol=4)
+      newstarts=c(1,cumsum(dimvec)+1)
+      newends=cumsum(dimvec)
+      for(i in 1:length(dimvec)) if(dimvec[i]>=maxwidth/2){
+        newmat=rbind(newmat,scorematset[newstarts[i]:newends[i],])
+        newmat2=rbind(newmat2,bindmatset[newstarts[i]:newends[i],])
+      }
+      scorematset=newmat
+      bindmatset=newmat2
+
+      scorematset=newmat
+      ####remove offending motif
+      if(verbosity>=3) print(dim(alphas))
+      if(verbosity>=3) print(length(dimvec))
+      alphas=alphas[,dimvec>3]
+      alpha=alpha[dimvec>3]
+      dimvec=dimvec[dimvec>3]
+    }
+
     ####remove motifs if not viable
     if(min(length(fullseqs)*alpha)<=10){
       if(verbosity>=1) print("Some motifs have <=10 expected copies, removing")
