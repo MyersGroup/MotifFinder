@@ -678,7 +678,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       remo=which(dimvec>=maxwidth/2)
       if(verbosity>=1) print("Some motifs have length >=maxwidth/2, removing")
       if(verbosity>=1) print(paste("Motif Lengths:",dimvec))
-      if(sum(dimvec>=maxwidth/2)==0){
+      if(sum(dimvec<=maxwidth/2)==0){
         warning("No motifs remaining!", call.=FALSE)
         return(NULL)
       }
