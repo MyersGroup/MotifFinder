@@ -6,7 +6,8 @@
 \usage{
 findamotif(seqs, len, scores = NULL, nits = 50, ntries = 1,
   n_for_refine = 1000, prior = NULL, updateprior = 1, plen = 0.9,
-  seed = NULL, verbosity = 1)
+  seed = NULL, verbosity = 1, motif_rank = 1, force_mot = NULL,
+  motif_blacklist = NULL)
 }
 \arguments{
 \item{seqs}{a vector of strings giving the DNA sequences in which to find a motif}

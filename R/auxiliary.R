@@ -71,7 +71,7 @@ export_PWM <- function(pwm, name, file, format="meme", complement=FALSE){
 #' @param database string; Either "jaspar" or "hocomoco".
 #' @param pseudocount numeric; value of pseudocount to add to every entry of the PWM (to avoid 0 or 1 counts) (Applied for jaspar only)
 #'
-#' @return A PWM matrix
+#' @return A list of two items, a PWM matrix and a name
 #'
 #' @examples
 #' download_PWM("ALX1_MOUSE.H11MO.0.B", database="hocomoco")
@@ -84,10 +84,15 @@ download_PWM <- function(id, database="jaspar", pseudocount=5){
 
   if(database=="jaspar"){
 
-    pwm <- fread(paste0("http://jaspar.genereg.net/api/v1/matrix/",id,".pfm"))
-    pwm <- as.matrix(pwm + pseudocount) / colSums(pwm + pseudocount)
-    rownames(pwm) <- c("A", "C", "G", "T")
+    motif <- jsonlite::fromJSON(paste0("http://jaspar.genereg.net/api/v1/matrix/",id,".json"))
+
+    pwm <- matrix(unlist(motif$pfm), ncol = 4)
+    colnames(pwm) <- names(motif$pfm)
+    pwm <- t(pwm[,c("A", "C", "G", "T")])
+    pwm <- (pwm + pseudocount) / colSums(pwm + pseudocount)
     pwm <- t(pwm)
+
+    return(list(pwm=pwm, name=motif$name))
 
   }else if(database=="hocomoco"){
 
@@ -96,11 +101,11 @@ download_PWM <- function(id, database="jaspar", pseudocount=5){
     colnames(pwm) <- c("A", "C", "G", "T")
     pwm <- exp(pwm)
 
+    return(list(pwm=pwm, name=id))
+
   }else{
     warning("database not recognised should be either 'jaspar' or 'hocomoco'")
   }
-
-  return(pwm)
 
 }
 

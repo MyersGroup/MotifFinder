@@ -14,7 +14,7 @@ download_PWM(id, database = "jaspar", pseudocount = 5)
 \item{pseudocount}{numeric; value of pseudocount to add to every entry of the PWM (to avoid 0 or 1 counts) (Applied for jaspar only)}
 }
 \value{
-A PWM matrix
+A list of two items, a PWM matrix and a name
 }
 \description{
 Download PWM from Jaspar or Hocomoco
