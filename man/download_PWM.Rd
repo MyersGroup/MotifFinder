@@ -4,12 +4,10 @@
 \alias{download_PWM}
 \title{Download PWM from Jaspar or Hocomoco}
 \usage{
-download_PWM(id, database = "jaspar", pseudocount = 5)
+download_PWM(id, pseudocount = 5)
 }
 \arguments{
 \item{id}{string; The ID of the motif to download}
-
-\item{database}{string; Either "jaspar" or "hocomoco".}
 
 \item{pseudocount}{numeric; value of pseudocount to add to every entry of the PWM (to avoid 0 or 1 counts) (Applied for jaspar only)}
 }
@@ -20,6 +18,7 @@ A list of two items, a PWM matrix and a name
 Download PWM from Jaspar or Hocomoco
 }
 \examples{
-download_PWM("ALX1_MOUSE.H11MO.0.B", database="hocomoco")
+download_PWM("ALX1_MOUSE.H11MO.0.B")
+download_PWM("MA0506.1")
 
 }
