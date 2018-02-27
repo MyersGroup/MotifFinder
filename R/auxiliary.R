@@ -108,6 +108,32 @@ download_PWM <- function(id, pseudocount=5){
 
 }
 
+#' Convert PCM to PWM
+#'
+#' @param pcm matrix; n by 4 matrix of PCM / PFM
+#' @param pseudocount numeric; value of pseudocount to add to every entry of the PWM (to avoid 0 or 1 counts),
+#' or vector of pseudocounts to add to each nt position
+#'
+#' @return A position weight matrix
+#'
+#' @examples
+#' pcm <- t(rbind(matrix(c(rep(10,8),rep(100,8)),nrow=2),
+#'                matrix(c(rep(20,7),0,rep(200,7),0),nrow=2)))
+#' pcm2pwm(pcm)
+#'
+#' @export
+#'
+
+pcm2pwm <- function(pcm, pseudocount=NULL){
+  stopifnot(ncol(pcm)==4)
+  if(is.null(pseudocount)){
+    pseudocount <- sapply(log(rowSums(pcm)), function(x) max(2,x))
+  }
+  pcm <- pcm + pseudocount
+  pcm <- pcm / rowSums(pcm)
+  return(pcm)
+}
+
 #' Convert PWM matrix to text (character string)
 #'
 #' @param pwm matrix; n by 4 matrix of log scale numeric values
