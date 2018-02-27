@@ -68,7 +68,7 @@ export_PWM <- function(pwm, name, file, format="meme", complement=FALSE){
 #' Download PWM from Jaspar or Hocomoco
 #'
 #' @param id string; The ID of the motif to download
-#' @param pseudocount numeric; value of pseudocount to add to every entry of the PWM (to avoid 0 or 1 counts) (Applied for jaspar only)
+#' @param pseudocount numeric; value of pseudocount to add to every entry of the PWM (to avoid 0 or 1 counts)
 #'
 #' @return A list of two items, a PWM matrix and a name
 #'
@@ -80,30 +80,23 @@ export_PWM <- function(pwm, name, file, format="meme", complement=FALSE){
 #' @export
 #'
 
-download_PWM <- function(id, pseudocount=5){
+download_PWM <- function(id, pseudocount=NULL){
 
   if(!grepl(".H11MO.",id)){ #database=="jaspar"
 
     motif <- jsonlite::fromJSON(paste0("http://jaspar.genereg.net/api/v1/matrix/",id,".json"))
-
     pwm <- matrix(unlist(motif$pfm), ncol = 4)
     colnames(pwm) <- names(motif$pfm)
-    pwm <- t(pwm[,c("A", "C", "G", "T")])
-    pwm <- (pwm + pseudocount) / colSums(pwm + pseudocount)
-    pwm <- t(pwm)
-
+    pwm <- pwm[,c("A", "C", "G", "T")]
+    pwm <- pcm2pwm(pwm, pseudocount=pseudocount)
     return(list(pwm=pwm, name=motif$name))
 
   }else if(grepl(".H11MO.",id)){ # database=="hocomoco"
 
-    pwm <- jsonlite::fromJSON(paste0("http://hocomoco11.autosome.ru/motif/",id,"/pcm.json"))
-    pwm <- t(as.matrix(pwm))
-    pwm <- (pwm + pseudocount) / colSums(pwm + pseudocount)
-    rownames(pwm) <- c("A", "C", "G", "T")
-    pwm <- t(pwm)
-
+    motif <- jsonlite::fromJSON(paste0("http://hocomoco11.autosome.ru/motif/",id,"/pcm.json"))
+    colnames(motif) <- c("A", "C", "G", "T")
+    pwm <- pcm2pwm(motif, pseudocount=pseudocount)
     return(list(pwm=pwm, name=id))
-
   }
 
 }
