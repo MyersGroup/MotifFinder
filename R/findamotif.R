@@ -132,8 +132,8 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
     if(verbosity>=3) print(i)
     mot=seqs[i]
     motc=seqsc[i]
-    ourset=unique(c(grep(mot,midregs),grep(motc,midregs)))
-    ourset2=unique(c(grep(mot,reg2),grep(motc,reg2)))
+    ourset=unique(c(grep(mot, midregs, fixed = T),grep(motc, midregs, fixed = T)))
+    ourset2=unique(c(grep(mot, reg2, fixed = T),grep(motc, reg2, fixed = T)))
     t2=sum(nchar(reg2)-len+1)
     t1=sum(nchar(midregs)-len+1)
     enrich[i]=length(ourset)/t1/(length(ourset2)-length(ourset))*(t2-t1)
