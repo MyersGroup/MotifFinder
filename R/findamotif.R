@@ -68,16 +68,7 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
 
   if(verbosity>=3) print("Replacing DNA letters with numbers....")
   seqv=as.vector(unlist(strsplit(seqs,"")))
-  seqv=gsub("A","0",seqv)
-  seqv=gsub("C","1",seqv)
-  seqv=gsub("G","2",seqv)
-  seqv=gsub("T","3",seqv)
-  seqv=gsub("a","4",seqv)
-  seqv=gsub("c","5",seqv)
-  seqv=gsub("g","6",seqv)
-  seqv=gsub("t","7",seqv)
-  seqv=gsub("N","8",seqv)
-  seqv=as.integer(seqv)
+  seqv = as.integer(chartr("ACGTacgtN","012345678",seqv))
   if(verbosity>=3) print("....done")
 
   if(verbosity>=3) print("Indexing....")

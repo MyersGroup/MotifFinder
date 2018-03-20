@@ -106,11 +106,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
   seqs=seqs[this<=maxwidth]
   this=this[this<=maxwidth]
   fullseqs=seqs
-  seqs=gsub("A","1",seqs)
-  seqs=gsub("C","2",seqs)
-  seqs=gsub("G","3",seqs)
-  seqs=gsub("T","4",seqs)
-  seqs=gsub("N","5",seqs)
+  seqs = chartr("ACGTN","12345",seqs)
 
   if(verbosity>=3) print("Padding with N's to equalize size")
   temp=rep("5",maxwidth)
