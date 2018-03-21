@@ -184,6 +184,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
           }
 
         }
+        rm(newmat_t)
 
         scores <- matrix(scores, nrow=nrow(newmat))
         scores2 <- matrix(scores2, nrow=nrow(newmat))
@@ -305,6 +306,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
       background[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),1:cols] <- background_tmp
     }
+    rm(background_tmp)
     if(verbosity>=3) print("Done")
 
     if(verbosity>=3) print(range(overallscores))
@@ -312,6 +314,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(verbosity>=3) print(range(background))
     overallscores=overallscores-background
     overallscores2=overallscores2-background
+    rm(background)
     if(verbosity>=3) print(range(overallscores))
     if(verbosity>=3) print(range(overallscores2))
 
@@ -369,6 +372,9 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     postforward=postforward*priormat
     postbackward=postbackward*priormat
 
+    # rm(priormat)
+    # rm(posmat)
+
     for(j in 1:length(starts)){
       temp=postforward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]
       postforward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]=temp
@@ -383,6 +389,10 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       samplemat[,(s*(j-1)*2+1):(s*(2*j-1))]=postforward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),];
       samplemat[,(s*(2*j-1)+1):(s*(2*j))]=postbackward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),];
     }
+
+    rm(postforward)
+    rm(postbackward)
+
     samplemat=samplemat/(rowSums(samplemat)+(1-sum(alpha)))
     ###enables sampling
 
@@ -412,6 +422,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     for(j in ncol(samplemat):1){
       whichcol[q<=testmat[,j]]=j
     }
+    rm(testmat)
+    rm(samplemat)
     mot[whichcol!=0]=1
 
     whichmot=floor((whichcol-1)/2/ncol(overallscores))+1
