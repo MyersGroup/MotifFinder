@@ -171,17 +171,22 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       if(updatemot==1 | its==1){
         startrange=seq(1,maxwidth-nrow(scoremat)+1)
         maxes=max(startrange)-1
+
         for(i in 1:nrow(scoremat)){ #####sum log probabilities of each base according to pwm
-          if(i==1) scores=matrix(scoremat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
-          else scores=scores+matrix(scoremat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
+          newmat_t <- newmat[,i:(i+maxes)]
+
+          if(i==1){
+            scores = scoremat[i,newmat_t]
+            scores2 = compmat[i,newmat_t]
+          }else{
+            scores = scores + scoremat[i,newmat_t]
+            scores2 = scores2 + compmat[i,newmat_t]
+          }
+
         }
-        if(verbosity>=3) print("Complement")
-        scores2=matrix(0,nrow=nrow(newmat),ncol=length(startrange))
-        for(i in 1:nrow(scoremat)){
-          if(i==1) scores2=matrix(compmat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
-          else scores2=scores2+matrix(compmat[i,newmat[,i:(i+maxes)]],nrow=nrow(newmat))
-        }
-        if(verbosity>=3) print("Overall")
+
+        scores <- matrix(scores, nrow=nrow(newmat))
+        scores2 <- matrix(scores2, nrow=nrow(newmat))
 
         overall=scores
         overall[scores2>scores]=scores2[scores2>scores]
