@@ -9,6 +9,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
 	gtools,
+	ggplot2,
 	ggseqlogo,
 	data.table,
 	jsonlite,

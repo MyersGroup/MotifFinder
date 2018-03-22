@@ -253,3 +253,116 @@ export_FASTA <- function(sequences, file){
   names(sequences) <- paste0(">",names(sequences))
   write.table(c(rbind(names(sequences), sequences)), file, row.names = FALSE, col.names = FALSE, quote = FALSE)
 }
+
+
+#' Plot Sequence logo denovo motif vs Tomtom match
+#'
+#' @param query_motif; list object output from findamotif()
+#' @param tomtom_match; data.frame, result from reading in the text output of Tomtom
+#' columns required: "Target.ID", "Orientation", "Optimal.offset"
+#' @param yaxis logical; If FALSE yaxis values and labels are hidden
+#'
+#' @return A plot, ggplot2 object
+#'
+#' @import ggseqlogo ggplot2
+#'
+#' @export
+#'
+
+plot_tomtom_match <- function(query_motif, tomtom_match, titles=NULL, yaxis=TRUE){
+
+  # Take first entry of data.frame
+  i=1
+
+  # Download db motif
+  db_motif <- download_PWM(tomtom_match[i]$Target.ID)
+  db_pwm <- t(db_motif$pwm)
+
+  if(tomtom_match[i]$Orientation=="-"){
+    reverse_c <- TRUE
+  }else{
+    reverse_c <- FALSE
+  }
+
+  # get denovo motif pwm
+  dn_pwm <- get_PWM(query_motif, reverse_c)
+
+  # initialise padding to 0
+  db_padd <- dn_padd <- db_padd_e <- dn_padd_e  <- 0
+
+  offset <- tomtom_match[i]$Optimal.offset
+
+  # calculate padding
+  if(!reverse_c){
+    if(offset < 0){
+      db_padd <- abs(offset)
+    }else{
+      dn_padd <- abs(offset)
+    }
+  }else{ # if reverse complement NB offset is if the jaspar is reverse complmented
+
+    reverse_offset <- max(ncol(db_pwm),ncol(dn_pwm)) -
+      min(ncol(db_pwm),ncol(dn_pwm)) - abs(offset)
+
+    if(abs(offset) + ncol(db_pwm) < ncol(dn_pwm)){
+      db_padd <- abs(reverse_offset)
+    }else{
+      dn_padd <- abs(reverse_offset)
+    }
+  }
+
+  z <- function(n){matrix(0, nrow=4, ncol=n)}
+
+  db_pwm <- cbind(z(db_padd),db_pwm)
+  dn_pwm <- cbind(z(dn_padd),dn_pwm)
+
+  # Padd motifs to equal length
+  length_diff <- ncol(db_pwm)-ncol(dn_pwm)
+  if(length_diff<0){
+    db_pwm <- cbind(db_pwm,z(abs(length_diff)))
+  }else{
+    dn_pwm <- cbind(dn_pwm,z(abs(length_diff)))
+  }
+
+  pwm_list <- list(db_pwm,dn_pwm)
+
+  if(!is.null(titles)){
+    db_title <- titles[i]
+  }else if(db_motif$name==tomtom_match[i]$Target.ID){
+    db_title <- strsplit(db_motif$name,"_")[[1]][[1]]
+  }else{
+    db_title <- paste(db_motif$name, tomtom_match[i]$Target.ID)
+  }
+
+  names(pwm_list) <- c("Tomtom Match","Denovo")
+  #paste("MotifFinder Denovo",tomtom_match[i]$X.Query.ID,tomtom_match[i]$side)
+
+  #print(ggseqlogo(pwm_list,ncol=1,scales = "free_y"))
+
+  p <- ggseqlogo(pwm_list, ncol=1, scales = "free_y") +
+    facet_wrap(~seq_group,
+               scales = "free_y",
+               ncol = 1,
+               strip.position = "right")+
+    ggtitle(db_title) +
+    theme_minimal() +
+    theme(plot.title = element_text(hjust = 0.2, size=12),
+          panel.grid.minor = element_blank(),
+          panel.grid.major = element_blank(),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          strip.background = element_blank())
+
+  #size=18, strip.text = element_text(size = 8),
+
+  if(!yaxis){
+    p <- p + theme(axis.text.y=element_blank(),
+                   axis.ticks.y=element_blank(),
+                   strip.text.y = element_blank())
+  }
+
+  return(p)
+
+}
