@@ -314,7 +314,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(verbosity>=3) print(range(background))
     overallscores=overallscores-background
     overallscores2=overallscores2-background
-    rm(background)
+    # rm(background), required if updatemotif=1
     if(verbosity>=3) print(range(overallscores))
     if(verbosity>=3) print(range(overallscores2))
 
@@ -371,9 +371,6 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(verbosity>=3) print("Calculating probabilities")
     postforward=postforward*priormat
     postbackward=postbackward*priormat
-
-    # rm(priormat)
-    # rm(posmat)
 
     for(j in 1:length(starts)){
       temp=postforward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]
