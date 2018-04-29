@@ -1,7 +1,7 @@
 #' Calculate Position-Weight Matrix
 #'
 #' @param motif the output of findamotif()
-#' @param complment logical; if TRUE the reverse complement PWM is returned
+#' @param complement logical; if TRUE the reverse complement PWM is returned
 #'
 #' @return matrix; a 4xN position-weight matrix where N is the length of the motif
 #'
@@ -130,12 +130,12 @@ pcm2pwm <- function(pcm, pseudocount=NULL){
 #' Convert PWM matrix to text (character string)
 #'
 #' @param pwm matrix; n by 4 matrix of log scale numeric values
-#' @param treshold numeric; value between 0.5 and 1 to determine when to display capital vs lowercase letter.
+#' @param threshold numeric; value between 0.5 and 1 to determine when to display capital vs lowercase letter.
 #'
 #' @return A charachter string
 #'
 #' @examples
-#' pwm2text(position_weight_matrix)
+#' # pwm2text(position_weight_matrix)
 #'
 #' @import data.table jsonlite
 #' @export
@@ -169,6 +169,7 @@ pwm2text <- function(pwm, threshold=0.7){
 #'
 #' @param found_motif list; The output of getmotifs()
 #' @param linepos integer; position of line in plot to mark e.g. the TSS
+#' @param top_n integer; how many input sequences to plot
 #'
 #' @return A ggplot2 object
 #'
@@ -261,6 +262,7 @@ export_FASTA <- function(sequences, file){
 #' @param tomtom_match; data.frame, result from reading in the text output of Tomtom
 #' columns required: "Target.ID", "Orientation", "Optimal.offset"
 #' @param yaxis logical; If FALSE yaxis values and labels are hidden
+#' @param titles character vector; titles to use for each logo if not the default
 #'
 #' @return A plot, ggplot2 object
 #'

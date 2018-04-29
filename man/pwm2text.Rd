@@ -9,7 +9,7 @@ pwm2text(pwm, threshold = 0.7)
 \arguments{
 \item{pwm}{matrix; n by 4 matrix of log scale numeric values}
 
-\item{treshold}{numeric; value between 0.5 and 1 to determine when to display capital vs lowercase letter.}
+\item{threshold}{numeric; value between 0.5 and 1 to determine when to display capital vs lowercase letter.}
 }
 \value{
 A charachter string
@@ -18,6 +18,6 @@ A charachter string
 Convert PWM matrix to text (character string)
 }
 \examples{
-pwm2text(position_weight_matrix)
+# pwm2text(position_weight_matrix)
 
 }

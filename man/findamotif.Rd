@@ -31,6 +31,12 @@ findamotif(seqs, len, scores = NULL, nits = 50, ntries = 1,
 \item{seed}{integer; seed for random number generation, set this for exactly reproducible results.}
 
 \item{verbosity}{integer; How verbose should this function be? 0=silent, 3=everything.}
+
+\item{motif_rank}{integer; which rank of seed motif to use (1st seed motif, 2nd etc.)}
+
+\item{force_mot}{string; use this seed motif instead of calculated}
+
+\item{motif_blacklist}{charachter vector; motifs not to use as seed motif}
 }
 \value{
 List item with the following items:\cr

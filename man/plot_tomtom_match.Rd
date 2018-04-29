@@ -7,6 +7,8 @@
 plot_tomtom_match(query_motif, tomtom_match, titles = NULL, yaxis = TRUE)
 }
 \arguments{
+\item{titles}{character vector; titles to use for each logo if not the default}
+
 \item{yaxis}{logical; If FALSE yaxis values and labels are hidden}
 
 \item{query_motif;}{list object output from findamotif()}

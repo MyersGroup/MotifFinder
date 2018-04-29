@@ -11,6 +11,9 @@
 #' @param updateprior a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)?
 #' @param seed integer; seed for random number generation, set this for exactly reproducible results.
 #' @param verbosity integer; How verbose should this function be? 0=silent, 3=everything.
+#' @param motif_blacklist charachter vector; motifs not to use as seed motif
+#' @param motif_rank integer; which rank of seed motif to use (1st seed motif, 2nd etc.)
+#' @param force_mot string; use this seed motif instead of calculated
 #'
 #' @details
 #' This function identifies a single PWM from an iterative Gibbs sampler described in Altemose et al. eLife 2017. Function 2 can refine multiple motifs further, jointly.

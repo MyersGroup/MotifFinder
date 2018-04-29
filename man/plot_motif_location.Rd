@@ -10,6 +10,8 @@ plot_motif_location(found_motif, linepos = NULL, top_n = NULL)
 \item{found_motif}{list; The output of getmotifs()}
 
 \item{linepos}{integer; position of line in plot to mark e.g. the TSS}
+
+\item{top_n}{integer; how many input sequences to plot}
 }
 \value{
 A ggplot2 object

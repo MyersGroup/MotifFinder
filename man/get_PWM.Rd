@@ -9,7 +9,7 @@ get_PWM(motif, complement = FALSE)
 \arguments{
 \item{motif}{the output of findamotif()}
 
-\item{complment}{logical; if TRUE the reverse complement PWM is returned}
+\item{complement}{logical; if TRUE the reverse complement PWM is returned}
 }
 \value{
 matrix; a 4xN position-weight matrix where N is the length of the motif
