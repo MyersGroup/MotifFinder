@@ -258,8 +258,8 @@ export_FASTA <- function(sequences, file){
 
 #' Plot Sequence logo denovo motif vs Tomtom match
 #'
-#' @param query_motif; list object output from findamotif()
-#' @param tomtom_match; data.frame, result from reading in the text output of Tomtom
+#' @param query_motif list object output from findamotif()
+#' @param tomtom_match data.frame; result from reading in the text output of Tomtom
 #' columns required: "Target.ID", "Orientation", "Optimal.offset"
 #' @param yaxis logical; If FALSE yaxis values and labels are hidden
 #' @param titles character vector; titles to use for each logo if not the default
@@ -271,7 +271,7 @@ export_FASTA <- function(sequences, file){
 #' @export
 #'
 
-plot_tomtom_match <- function(query_motif, tomtom_match, titles=NULL, yaxis=TRUE){
+plot_tomtom_match <- function(query_motif=NULL, tomtom_match=NULL, titles=NULL, yaxis=TRUE){
 
   # Take first entry of data.frame
   i=1

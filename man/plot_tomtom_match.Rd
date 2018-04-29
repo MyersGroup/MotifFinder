@@ -4,17 +4,18 @@
 \alias{plot_tomtom_match}
 \title{Plot Sequence logo denovo motif vs Tomtom match}
 \usage{
-plot_tomtom_match(query_motif, tomtom_match, titles = NULL, yaxis = TRUE)
+plot_tomtom_match(query_motif = NULL, tomtom_match = NULL, titles = NULL,
+  yaxis = TRUE)
 }
 \arguments{
+\item{query_motif}{list object output from findamotif()}
+
+\item{tomtom_match}{data.frame; result from reading in the text output of Tomtom
+columns required: "Target.ID", "Orientation", "Optimal.offset"}
+
 \item{titles}{character vector; titles to use for each logo if not the default}
 
 \item{yaxis}{logical; If FALSE yaxis values and labels are hidden}
-
-\item{query_motif;}{list object output from findamotif()}
-
-\item{tomtom_match;}{data.frame, result from reading in the text output of Tomtom
-columns required: "Target.ID", "Orientation", "Optimal.offset"}
 }
 \value{
 A plot, ggplot2 object
