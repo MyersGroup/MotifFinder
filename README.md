@@ -1,6 +1,9 @@
 # MotifFinder: Find enriched motifs in a set of DNA sequences
+[![Travis-CI Build Status](https://travis-ci.org/MyersGroup/MotifFinder.svg?branch=master)](https://travis-ci.org/MyersGroup/MotifFinder)
+[![codecov](https://codecov.io/gh/MyersGroup/MotifFinder/branch/master/graph/badge.svg)](https://codecov.io/gh/MyersGroup/MotifFinder)
 
-By Simon Myers & Nicolas Altemose
+
+By Simon Myers, Nicolas Altemose & Daniel Wells
 
 This is an R package for finding enriched motifs in a set of DNA sequences using an iterative Gibbs sampler described in [Altemose et al. eLife 2017](https://elifesciences.org/articles/28383).
 
