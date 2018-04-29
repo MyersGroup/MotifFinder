@@ -1,15 +1,19 @@
 #' Jointly call and refine a set of seed motifs provided by the findamotif function
 #'
-#' @param scorematset is a set of matrices, row-concatenated, giving pwms (log-scale) for the initialisation of the algorithm
-#' scorematset is of dimension sum(dimvec)x4 and the first `dimvec[1]` rows of this matrix gives the pwm for the first motifs, the next `dimvec[2]` rows the second motif, and so on
+#' @param scorematset is a set of matrices, row-concatenated, giving pwms (log-scale) for the initialisation of the algorithm.
+#' scorematset is of dimension `sum(dimvec)` rows by 4 columns. and the first `dimvec[1]` rows of this matrix gives the pwm for the first motifs,
+#' the next `dimvec[2]` rows the second motif, and so on
 #' @param dimvec gives the lengths of each of the initial motifs. If dimvec is of length n_motifs, motif k is of length `dimvec[k]`
-#' @param seqs a vector of input sequences used for finding motifs within. Lower case bases are ignored/masked - e.g. if repeats are an issue. In some cases it may be helpful NOT to mask repeats that may contain motif matches
+#' @param seqs a vector of input sequences used for finding motifs within.
+#' Lower case bases are ignored/masked - e.g. if repeats are an issue. In some cases it may be helpful NOT to mask repeats that may contain motif matches
 #' @param maxwidth the length that elements of "seqs" will be trimmed to (around their centre). Run times depend roughly linearly on this parameter
 #' @param alpha a vector of initial assumed probabilities each motif is present in a sequence
 #' @param incprob can usually be left as default value
 #' @param maxits the number of iterations (if no motif is found the algorithm could terminate early)
-#' @param plen a parameter setting the geometric prior on how long each motif found should be. plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more
-#' @param ourprior a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.
+#' @param plen a parameter setting the geometric prior on how long each motif found should be.
+#' plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more
+#' @param ourprior a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the
+#' sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.
 #' @param bg should be left at default value normally (technical parameter setting background model)
 #' @param updatemot a flag - should the algorithm update (learn) the initial motifs (default is 1)
 #' @param updatealpha a flag - should the algorithm update (learn) the initial motifs (default is 1)
@@ -38,7 +42,8 @@
 #'
 #' Details of overall fitted model:
 #' * scoremat: a matrix made up of matrices, row-concatenated, giving pwms (log-scale) for the identified motifs after iteration
-#' * scorematdim: the lengths of each of the identified motifs. If scorematdim is of length n_motifs, motif k is of length scorematdim[k]. scoremat is of dimension sum(scorematdim)x4 and the first scorematdim[1] rows of this matrix gives the pwm for the first motifs, the next scorematdim[2] rows the second motif, and so on
+#' * scorematdim: the lengths of each of the identified motifs. If scorematdim is of length n_motifs, motif k is of length `scorematdim[k]`
+#' scoremat is of dimension `sum(scorematdim)` by 4 and the first `scorematdim[1]` rows of this matrix gives the pwm for the first motifs, the next `scorematdim[2]` rows the second motif, and so on
 #' * prior: a vector of length 10 probabilities giving the inferred probability of a motif being found across different parts of the sequence from start to end.
 #' * alpha: a vector of probabilities giving the inferred probability of each motif being found within a single input region
 #' * bindmat:a version of scoremat accounting for the background sequence composition

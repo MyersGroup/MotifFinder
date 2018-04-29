@@ -10,12 +10,14 @@ getmotifs(scorematset, dimvec, seqs, maxwidth = 800, alpha = 0.5,
   allowinf = FALSE, seed = NULL, verbosity = 1)
 }
 \arguments{
-\item{scorematset}{is a set of matrices, row-concatenated, giving pwms (log-scale) for the initialisation of the algorithm
-scorematset is of dimension sum(dimvec)x4 and the first \code{dimvec[1]} rows of this matrix gives the pwm for the first motifs, the next \code{dimvec[2]} rows the second motif, and so on}
+\item{scorematset}{is a set of matrices, row-concatenated, giving pwms (log-scale) for the initialisation of the algorithm.
+scorematset is of dimension \code{sum(dimvec)} rows by 4 columns. and the first \code{dimvec[1]} rows of this matrix gives the pwm for the first motifs,
+the next \code{dimvec[2]} rows the second motif, and so on}
 
 \item{dimvec}{gives the lengths of each of the initial motifs. If dimvec is of length n_motifs, motif k is of length \code{dimvec[k]}}
 
-\item{seqs}{a vector of input sequences used for finding motifs within. Lower case bases are ignored/masked - e.g. if repeats are an issue. In some cases it may be helpful NOT to mask repeats that may contain motif matches}
+\item{seqs}{a vector of input sequences used for finding motifs within.
+Lower case bases are ignored/masked - e.g. if repeats are an issue. In some cases it may be helpful NOT to mask repeats that may contain motif matches}
 
 \item{maxwidth}{the length that elements of "seqs" will be trimmed to (around their centre). Run times depend roughly linearly on this parameter}
 
@@ -25,13 +27,15 @@ scorematset is of dimension sum(dimvec)x4 and the first \code{dimvec[1]} rows of
 
 \item{maxits}{the number of iterations (if no motif is found the algorithm could terminate early)}
 
-\item{plen}{a parameter setting the geometric prior on how long each motif found should be. plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more}
+\item{plen}{a parameter setting the geometric prior on how long each motif found should be.
+plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more}
 
 \item{updatemot}{a flag - should the algorithm update (learn) the initial motifs (default is 1)}
 
 \item{updatealpha}{a flag - should the algorithm update (learn) the initial motifs (default is 1)}
 
-\item{ourprior}{a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.}
+\item{ourprior}{a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the
+sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.}
 
 \item{updateprior}{a flag - should the algorithm update (learn) the prior on where the motifs occur within the DNA sequences(default is 1)}
 
@@ -57,7 +61,8 @@ Details of input data given:
 Details of overall fitted model:
 \itemize{
 \item scoremat: a matrix made up of matrices, row-concatenated, giving pwms (log-scale) for the identified motifs after iteration
-\item scorematdim: the lengths of each of the identified motifs. If scorematdim is of length n_motifs, motif k is of length scorematdim\link{k}. scoremat is of dimension sum(scorematdim)x4 and the first scorematdim\link{1} rows of this matrix gives the pwm for the first motifs, the next scorematdim\link{2} rows the second motif, and so on
+\item scorematdim: the lengths of each of the identified motifs. If scorematdim is of length n_motifs, motif k is of length \code{scorematdim[k]}
+scoremat is of dimension \code{sum(scorematdim)} by 4 and the first \code{scorematdim[1]} rows of this matrix gives the pwm for the first motifs, the next \code{scorematdim[2]} rows the second motif, and so on
 \item prior: a vector of length 10 probabilities giving the inferred probability of a motif being found across different parts of the sequence from start to end.
 \item alpha: a vector of probabilities giving the inferred probability of each motif being found within a single input region
 \item bindmat:a version of scoremat accounting for the background sequence composition
