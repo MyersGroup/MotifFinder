@@ -11,7 +11,7 @@ This is an R package for finding enriched motifs in a set of DNA sequences using
 
 ```R
 # install.packages("devtools")
-devtools::install_github("myersgroup/MotifFinder")
+remotes::install_github("myersgroup/MotifFinder")
 
 library(MotifFinder)
 
