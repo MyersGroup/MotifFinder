@@ -90,5 +90,6 @@ test_that("Download PWM from hocomoco works", {
 })
 
 test_that("Can plot motif location", {
+  expect_true(is.ggplot(plot_motif_location(motif_found)))
   expect_equal(class(plot_motif_location(motif_found)$layers[[1]]$geom)[1], "GeomSegment")
 })
