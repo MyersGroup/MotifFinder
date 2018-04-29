@@ -88,3 +88,7 @@ test_that("Download PWM from hocomoco works", {
   expect_gt(min(pwm$pwm), 0)
   expect_lt(max(pwm$pwm), 1)
 })
+
+test_that("Can plot motif location", {
+  expect_equal(class(plot_motif_location(motif_found)$layers[[1]]$geom)[1], "GeomSegment")
+})
