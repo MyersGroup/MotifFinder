@@ -1,7 +1,7 @@
 # MotifFinder: Find enriched motifs in a set of DNA sequences
 [![Travis-CI Build Status](https://travis-ci.org/MyersGroup/MotifFinder.svg?branch=master)](https://travis-ci.org/MyersGroup/MotifFinder)
 [![codecov](https://codecov.io/gh/MyersGroup/MotifFinder/branch/master/graph/badge.svg)](https://codecov.io/gh/MyersGroup/MotifFinder)
-
+[![DOI](https://zenodo.org/badge/113635222.svg)](https://zenodo.org/badge/latestdoi/113635222)
 
 By Simon Myers, Nicolas Altemose & Daniel Wells
 
