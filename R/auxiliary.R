@@ -147,7 +147,7 @@ pwm2text <- function(pwm, threshold=0.7){
   if(threshold<0.5){stop("Threshold should be >= 0.5 in order to chose a single letter at each position.")}
 
   # get column index of best nucleotide (with >0.5)
-  tmp <- as.numeric(apply(pwm, 1,function(x) which(x == max(x) & x>log(0.5))))
+  tmp <- as.numeric(apply(pwm, 1, function(x) which(x == max(x) & x>log(0.5))[1] ))
 
   # which nt have a value lower than the threshold
   which_small <- pwm[cbind(1:nrow(pwm),tmp)] < log(threshold)
