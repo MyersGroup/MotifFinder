@@ -127,6 +127,39 @@ pcm2pwm <- function(pcm, pseudocount=NULL){
   return(pcm)
 }
 
+#' Check if a motif is present within another motif
+#'
+#' @param submotif matrix; motif to search for, format: position weight matrix, n by 4 (A, C, G, T), (output of pcm2pwm)
+#' (default finds CpG dinucleotides)
+#' @param motif matrix; position weight matrix to check in
+#' @param ispcm logical; if TRUE will convert pcm to pwm (default: FALSE)
+#' @param probabilistic logical; if FALSE the sum of the convolution is taken,
+#' if TRUE (default), the product of the sum of each row is returned.
+#' TRUE will only work if the submotif is itself a pwm rather than a generic kernal.
+#'
+#' @return score of submotif being present in motif
+#'
+#'
+submotif <- function(motif, submotif=rbind(c(0,1,0,0),c(0,0,1,0)), ispcm=FALSE, probabilistic=TRUE){
+  if(ispcm){
+    motif <- pcm2pwm(t(motif))
+  }
+
+  if(nrow(motif) < nrow(submotif)){
+    stop("The submotif must be shorter than the motif")
+  }
+
+  shift <- nrow(submotif)-1
+
+  if(probabilistic){
+    max(sapply(1:(nrow(motif)-shift), function(x) prod(rowSums(motif[x:(x+shift),] * submotif))))
+  }else{
+    max(sapply(1:(nrow(motif)-shift), function(x) sum(motif[x:(x+shift),] * submotif))) / nrow(submotif)
+  }
+
+}
+
+
 #' Convert PWM matrix to text (character string)
 #'
 #' @param pwm matrix; n by 4 matrix of log scale numeric values
