@@ -658,7 +658,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       cat(paste0("Alpha(s): ",paste(round(alpha,2),collapse=" "),", Motif(s): '",motif_text,"'\n"))
     }
 
-    if(updatemot!=1){
+    if(updatemot==1){
     ####remove motifs if not long enough
     if(min(dimvec)<=3){
       remo=which(dimvec<=3)
