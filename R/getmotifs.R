@@ -488,12 +488,15 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       ourseqs=matrix(nrow=length(tempregs),ncol=nrow(scoremat)+50)
       sampleseqs=seqs[tempregs]
       v=substring(sampleseqs,tempstarts-25,tempends+25)
+
       for(i in 1:length(v)) if(tempstarts[i]<=25){
         v[i]=paste(c(rep("5",25-tempstarts[i]+1),v[i]),collapse="")
       }
-      for(i in 1:length(v)) if(tempends[i]+25>nchar(sampleseqs)[i]){
-        v[i]=paste(c(v[i],rep("5",tempends[i]+25-nchar(sampleseqs)[i])),collapse="")
-      }
+
+      extension_lengths <- tempends+25-nchar(sampleseqs)
+      extension_lengths[extension_lengths<0] <- 0
+      v = paste0(v,strrep("5", extension_lengths))
+
       ######have subsequences
       for(k in 1:(nrow(scoremat)+50)) ourseqs[,k]=as.double(substring(v,k,k))
 
