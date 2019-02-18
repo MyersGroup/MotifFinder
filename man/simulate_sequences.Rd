@@ -4,9 +4,9 @@
 \alias{simulate_sequences}
 \title{Simulate DNA sequences with an enriched motif}
 \usage{
-simulate_sequences(motif, number_sequences = 300, sequence_length = 200,
-  motif_position = NULL, enrichment = 0.5, jitter = 10, highprob = 0.85,
-  lowprob = 0.6)
+simulate_sequences(motif, number_sequences = 300,
+  sequence_length = 200, motif_position = NULL, enrichment = 0.5,
+  jitter = 10, highprob = 0.85, lowprob = 0.6)
 }
 \arguments{
 \item{motif}{character; string containing the motif sequence}

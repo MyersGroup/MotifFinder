@@ -358,10 +358,15 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(verbosity>=3) print("...OK4...")
 
     priormat=floor(priormat*10)+1
+
     for(i in 1:10) priormat[priormat==i]=prior[i]
     priormat[priormat<=0]=0
     priormat[priormat>10]=0
     priormat=priormat/rowSums(priormat)/2
+
+    # priormat[priormat %in% 1:10] <- prior[match(priormat, 1:10, nomatch = 0)]
+    # priormat[priormat<0 | priormat>10] = 0
+    # priormat = priormat/rowSums(priormat)/2
 
     scoremat=scorematset
 

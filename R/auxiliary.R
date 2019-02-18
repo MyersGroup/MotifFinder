@@ -289,6 +289,61 @@ export_FASTA <- function(sequences, file){
 }
 
 
+#' Load DNA sequences from a FASTA file
+#'
+#' @param sm.rm logical; should soft masked bases (lower case) be converted to N
+#' or capitalised, default=TRUE
+#' @param file string; Filename and path of FASTA file of sequences
+#' @param flank integer; how many bases either side of the center should be loaded
+#' @param proportion_N numeric; fraction of N bases allowed before the
+#' sequence is removed
+#'
+#' @return charachter vector of DNA sequences
+#'
+#' @import seqinr stringr
+#'
+#' @export
+#'
+load_sequences <- function(file, sm.rm=T, flank=150, proportion_N=0.02){
+  seqs <- seqinr::read.fasta(file, forceDNAtolower = FALSE, as.string = TRUE)
+  if(sm.rm){
+    seqs <-  gsub("a|t|c|g|n","N",as.character(seqs))
+  }else{
+    seqs <-  toupper(as.character(seqs))
+  }
+
+  names(seqs) <- 1:length(seqs)
+
+  seq_length <- nchar(seqs[1])
+
+  seqs <- substr(seqs, as.integer(seq_length/2) - flank, as.integer(seq_length/2) + flank)
+
+  number_masked <- stringr::str_count(seqs, "N")
+
+  return(seqs[number_masked <= as.integer(seq_length * proportion_N)])
+}
+
+
+#' Extract Motif Matches
+#'
+#' @param found_motif list; The output of getmotifs()
+#' @param motif integer; Which motif to mask if there is more than one in the found_motif list.
+#'
+#' @return charachter vector of DNA sequences matching the motif
+#'
+#' @import stringr stringi
+#'
+#' @export
+#'
+extract_matches <- function(found_motif,motif=1){
+  matches <- stringr::str_sub(found_motif$seqs[found_motif$whichregs],
+                   start = found_motif$whichpos,
+                   end = found_motif$whichpos + found_motif$scorematdim[found_motif$whichmot] -1)[found_motif$whichmot==motif]
+  matches[found_motif$whichstrand==0] <- stringi::stri_reverse(chartr("acgtACGT", "tgcaTGCA", matches[found_motif$whichstrand==0]))
+  return(matches)
+}
+
+
 #' Plot Sequence logo denovo motif vs Tomtom match
 #'
 #' @param query_motif list object output from findamotif()

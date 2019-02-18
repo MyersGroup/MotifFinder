@@ -4,8 +4,8 @@
 \alias{plot_tomtom_match}
 \title{Plot Sequence logo denovo motif vs Tomtom match}
 \usage{
-plot_tomtom_match(query_motif = NULL, tomtom_match = NULL, titles = NULL,
-  yaxis = TRUE)
+plot_tomtom_match(query_motif = NULL, tomtom_match = NULL,
+  titles = NULL, yaxis = TRUE)
 }
 \arguments{
 \item{query_motif}{list object output from findamotif()}
