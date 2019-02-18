@@ -46,10 +46,11 @@ ggseqlogo(get_PWM(motif_found, complement=TRUE))
 ```
 
 ## Where is the motif
-We can also check the location of the motif found.
+We can also check the location of the motifs found as well as the location it thinks the motifs are.
 
 ```{r plotlocation}
 plot_motif_location(motif_found)
+plot(motif_found$prior)
 ```
 
 
@@ -57,12 +58,30 @@ plot_motif_location(motif_found)
 It's a good idea to plot the inferred probability the motif being in each sequence (alpha parameter) for each iteration to check convergence.
 
 ```{r plotalpha}
-plot(motif_found$alphas)
+plot(motif_found$alphas, ylim=c(0,1))
 ```
 
 Other helper functions include downloading PWMs from the Jaspar or Hocomoco databases.
 ```{r donwloadPWM}
 Ascl2 <- download_PWM("MA0816.1")
 str(Ascl2)
+```
+
+## Extracting DNA from the genome
+
+To use real DNA instead of simulating sequences you will need to download the genome and extract regions that are specified using a BED file.
+
+```{bash, getFASTA, eval=FALSE}
+wget ftp://ftp.ensembl.org/pub/release-95/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz
+gunzip motifs/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa.gz
+samtools faidx motifs/Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa
+
+bedtools getfasta -s -fi Homo_sapiens.GRCh38.dna_sm.primary_assembly.fa -bed example_locations.bed -name > example_locations.fasta
+```
+
+We can then load these sequences using the helper function load_sequences
+
+```{r, load_genomic, eval=FALSE}
+genomic_sequences <- load_sequences("example_locations.fasta")
 ```
 
