@@ -18,8 +18,14 @@ simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
 
   # check sensible input
   stopifnot(nchar(motif) < sequence_length)
+  stopifnot(all(strsplit(motif, split = "")[[1]] %in% c("A","T","G","C","a","t","c","g","_")))
+
   stopifnot(motif_position + nchar(motif) < sequence_length)
+  stopifnot(motif_position >= 0)
+
   stopifnot(round(number_sequences * enrichment) > 1)
+  stopifnot(enrichment <= 1)
+
 
   # default position to center of sequences
   if(is.null(motif_position)){
