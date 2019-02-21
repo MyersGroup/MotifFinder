@@ -15,13 +15,13 @@ test_that("Enrichment is proportion containing motif when highprob=1 & All caps 
                          simulate_sequences(motif="GGGGGGGGGG",
                                             highprob=1,
                                             enrichment=0.5,
-                                            number_sequences=100), fixed = T)),
+                                            number_sequences=100, randomstrand = F), fixed = T)),
                expected = 50, tolerance=1, scale=1)
   expect_equal(sum(grepl("GGGGGGGGGG",
                          simulate_sequences(motif="GGGGGGGGGG",
                                             highprob=1,
                                             enrichment=1,
-                                            number_sequences=100), fixed = T)),
+                                            number_sequences=100, randomstrand = F), fixed = T)),
                expected = 100, tolerance=1, scale=1)
 })
 
