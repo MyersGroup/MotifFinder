@@ -9,14 +9,14 @@
 #' @param jitter integer; how many base pairs to randomly +/- shift the position of the motif
 #' @param highprob numeric; probability (between 0 and 1) of choosing a base when the motif has a capital/uppercase letter
 #' @param lowprob numeric; probability (between 0 and 1) of choosing a base when the motif has a lowercase letter
-#' @param randomstrand logical; should the strand of the motif be randomised (default: FALSE)
+#' @param randomstrand logical; should the strand of the motif be randomised (default: TRUE)
 #'
 #' @return a character vector of random DNA sequences with an enriched motif
 #'
 #' @export
 
 simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
-                                       motif_position=NULL, enrichment=0.5, jitter=10, highprob=0.85, lowprob=0.6, randomstrand=FALSE){
+                                       motif_position=NULL, enrichment=0.5, jitter=10, highprob=0.85, lowprob=0.6, randomstrand=TRUE){
 
   # check sensible input
   stopifnot(nchar(motif) < sequence_length)
