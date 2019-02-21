@@ -6,24 +6,28 @@
 \usage{
 simulate_sequences(motif, number_sequences = 300,
   sequence_length = 200, motif_position = NULL, enrichment = 0.5,
-  jitter = 10, highprob = 0.85, lowprob = 0.6)
+  jitter = 10, highprob = 0.85, lowprob = 0.6,
+  randomstrand = FALSE)
 }
 \arguments{
-\item{motif}{character; string containing the motif sequence}
+\item{motif}{character; string containing the motif sequence, can be upper or lower case ACGT or _}
 
 \item{number_sequences}{numeric; number of sequences to generate}
 
 \item{sequence_length}{numeric; length in bases of the sequences to be generated}
 
-\item{motif_position}{numeric; start position of the motif in the sequences}
+\item{motif_position}{numeric; start position of the motif in the sequences,
+default is half the sequence length - half the motif width}
 
 \item{enrichment}{numeric; what fraction of sequences should include the motif}
 
-\item{jitter}{integer; how variable should the position of the motif be}
+\item{jitter}{integer; how many base pairs to randomly +/- shift the position of the motif}
 
 \item{highprob}{numeric; probability (between 0 and 1) of choosing a base when the motif has a capital/uppercase letter}
 
 \item{lowprob}{numeric; probability (between 0 and 1) of choosing a base when the motif has a lowercase letter}
+
+\item{randomstrand}{logical; should the strand of the motif be randomised (default: FALSE)}
 }
 \value{
 a character vector of random DNA sequences with an enriched motif
