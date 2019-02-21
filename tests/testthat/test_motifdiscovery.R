@@ -7,24 +7,23 @@ simulated_sequences <- simulate_sequences("ATgTT_GtCC", number_sequences = 300, 
                                           lowprob = 0.6)
 
 test_that("Simulated sequences are exactly the same, given seed & parameters above", {
-  expect_known_hash(simulated_sequences,"183eedc82b")
+  expect_known_hash(simulated_sequences,"a19d5c9005")
 })
 
 # run MotifFinder
 motif_found <- findamotif(simulated_sequences, len=7, seed=258442)
 
 test_that("results are exactly the same, given seed's above", {
-  # expect_known_hash(motif_found,"fa51a93ed5")
-  expect_known_hash(motif_found$prior,"3b2ccb23e7")
-  expect_known_hash(motif_found$alphas,"b0f05cbbfa")
-  expect_known_hash(motif_found$scoremat,"d65c568e67")
-  expect_known_hash(digest::digest(signif(motif_found$regprobs)),"df64e2411d")
-  expect_known_hash(motif_found$whichpos,"01a35912e8")
-  expect_known_hash(motif_found$beststrand,"537707617b")
+  expect_known_hash(motif_found$prior,"fb622462d8")
+  expect_known_hash(motif_found$alphas,"e88bde2511")
+  expect_known_hash(motif_found$scoremat,"1d39f6fb9b")
+  expect_known_hash(digest::digest(signif(motif_found$regprobs)),"4074286e8e")
+  expect_known_hash(motif_found$whichpos,"df95dad424")
+  expect_known_hash(motif_found$beststrand,"ae9dcdf14b")
 })
 
 test_that("PWM extraction works", {
-  expect_known_hash(get_PWM(motif_found),"4011d5595a")
+  expect_known_hash(get_PWM(motif_found),"fe855048f2")
   expect_equal(dim(get_PWM(motif_found)), c(4,10))
   expect_equal(rownames(get_PWM(motif_found)), c("A", "C", "G", "T"))
   expect_gt(min(get_PWM(motif_found)), 0)
@@ -64,8 +63,8 @@ test_that("Can find Motif location when updatemot=0", {
             ourprior=rep(0.1,10),
             seed=258442)
 
-  expect_known_hash(motif_locs,"a2d29c2263")
-  expect_known_hash(motif_locs$whichpos,"e0a60535cb")
+  expect_known_hash(motif_locs,"c74a705ec0")
+  expect_known_hash(motif_locs$whichpos,"5115dc46ac")
 
   expect_equal(mean(motif_found$whichpos), expected = 100, tolerance=5, scale=1)
   expect_equal(mean(motif_found$bestmatch), expected = 100, tolerance=5, scale=1)
