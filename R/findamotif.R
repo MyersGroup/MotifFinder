@@ -14,6 +14,7 @@
 #' @param motif_blacklist charachter vector; motifs not to use as seed motif
 #' @param motif_rank integer; which rank of seed motif to use (1st seed motif, 2nd etc.)
 #' @param force_mot string; use this seed motif instead of calculated
+#' @param range integer; range around center to check for central enrichment
 #'
 #' @details
 #' This function identifies a single PWM from an iterative Gibbs sampler described in Altemose et al. eLife 2017. Function 2 can refine multiple motifs further, jointly.
@@ -49,7 +50,7 @@
 #' @export
 #' @import gtools
 
-findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1, motif_rank=1,force_mot=NULL,motif_blacklist=NULL){
+findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1, motif_rank=1,force_mot=NULL,motif_blacklist=NULL,range=50){
 
   if (is.null(seed)){
     seed <- sample.int(2^20, 1)
@@ -125,7 +126,6 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
 
   if(verbosity>=3) print("Checking for central enrichment....")
   mids=nchar(regs)/2
-  range=50
   reg2=regs[nchar(regs)>=mids+range & mids-range>=1]
   midregs=substring(reg2,mids-range,mids+range)
 

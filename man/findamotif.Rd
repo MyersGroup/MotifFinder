@@ -7,7 +7,7 @@
 findamotif(seqs, len, scores = NULL, nits = 50, ntries = 1,
   n_for_refine = 1000, prior = NULL, updateprior = 1, plen = 0.9,
   seed = NULL, verbosity = 1, motif_rank = 1, force_mot = NULL,
-  motif_blacklist = NULL)
+  motif_blacklist = NULL, range = 50)
 }
 \arguments{
 \item{seqs}{a vector of strings giving the DNA sequences in which to find a motif}
@@ -37,6 +37,8 @@ findamotif(seqs, len, scores = NULL, nits = 50, ntries = 1,
 \item{force_mot}{string; use this seed motif instead of calculated}
 
 \item{motif_blacklist}{charachter vector; motifs not to use as seed motif}
+
+\item{range}{integer; range around center to check for central enrichment}
 }
 \value{
 List item with the following items:\cr
