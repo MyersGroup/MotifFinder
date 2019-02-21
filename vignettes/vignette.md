@@ -1,7 +1,7 @@
 MotifFinder: Vignette (Tutorial)
 ================
 Daniel Wells
-2019-02-18
+2019-02-21
 
 ## Simulate Data
 
@@ -12,11 +12,15 @@ around the center of 50% of the sequences.
 library(MotifFinder)
 set.seed(42)
 simulated_sequences <- simulate_sequences(motif="ATgTT_GtCC")
+```
 
+    ## [1] "motif start position is 96"
+
+``` r
 str(simulated_sequences)
 ```
 
-    ##  Named chr [1:300] "CCTCGGGAGGTGCTTCCATGCACCAGTCTCGCTGACAACGTTACTCCGCGTTTCAGGATGGCCGCATCGAAAATAGATGAGATGCGAAATGAAATTTTTGTAATCCGGGAG"| __truncated__ ...
+    ##  Named chr [1:300] "CCTCTTTTGTATGGCCAAGGGGCGTAAAACTTAATCTCCGCTTTGCAGACTAGTGCGATTCGTGCGGCCGCTGGACCCAAGCATCCAGGCTCCCGGATTCCCTTACAAAAA"| __truncated__ ...
     ##  - attr(*, "names")= chr [1:300] "1" "2" "3" "4" ...
 
 # Run MotifFinder
@@ -77,16 +81,16 @@ Other helper functions include downloading PWMs from the Jaspar or
 Hocomoco databases.
 
 ``` r
-Ascl2 <- download_PWM("MA0816.1")
-str(Ascl2)
+Alx1 <- download_PWM("ALX1_MOUSE.H11MO.0.B")
+str(Alx1)
 ```
 
     ## List of 2
-    ##  $ pwm : num [1:10, 1:4] 0.6469 0.3663 0.0267 0.9046 0.0346 ...
+    ##  $ pwm : num [1:12, 1:4] 0.3795 0.1211 0.6119 0.6785 0.0768 ...
     ##   ..- attr(*, "dimnames")=List of 2
     ##   .. ..$ : NULL
     ##   .. ..$ : chr [1:4] "A" "C" "G" "T"
-    ##  $ name: chr "Ascl2"
+    ##  $ name: chr "ALX1_MOUSE.H11MO.0.B"
 
 ## Extracting DNA from the genome
 

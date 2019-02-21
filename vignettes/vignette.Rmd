@@ -63,8 +63,8 @@ plot(motif_found$alphas, ylim=c(0,1))
 
 Other helper functions include downloading PWMs from the Jaspar or Hocomoco databases.
 ```{r donwloadPWM}
-Ascl2 <- download_PWM("MA0816.1")
-str(Ascl2)
+Alx1 <- download_PWM("ALX1_MOUSE.H11MO.0.B")
+str(Alx1)
 ```
 
 ## Extracting DNA from the genome
