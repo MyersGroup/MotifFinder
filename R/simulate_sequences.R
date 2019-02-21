@@ -3,7 +3,8 @@
 #' @param motif character; string containing the motif sequence
 #' @param number_sequences numeric; number of sequences to generate
 #' @param sequence_length numeric; length in bases of the sequences to be generated
-#' @param motif_position numeric; start position of the motif in the sequences
+#' @param motif_position numeric; start position of the motif in the sequences,
+#' default is half the sequence length - half the motif width
 #' @param enrichment numeric; what fraction of sequences should include the motif
 #' @param jitter integer; how variable should the position of the motif be
 #' @param highprob numeric; probability (between 0 and 1) of choosing a base when the motif has a capital/uppercase letter
@@ -29,7 +30,8 @@ simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
 
   # default position to center of sequences
   if(is.null(motif_position)){
-    motif_position <- round(sequence_length / 2)
+    motif_position <- round((sequence_length+1)/2 - nchar(motif)/2)
+    print(paste("motif start position is", motif_position))
   }
 
   DNA <- c("A","T","G","C")
