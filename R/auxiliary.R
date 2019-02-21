@@ -203,6 +203,7 @@ pwm2text <- function(pwm, threshold=0.7){
 #' @param found_motif list; The output of getmotifs()
 #' @param linepos integer; position of line in plot to mark e.g. the TSS
 #' @param top_n integer; how many input sequences to plot
+#' @param linesize numeric; thickness of lines representing motif footprints
 #'
 #' @return A ggplot2 object
 #'
@@ -210,7 +211,7 @@ pwm2text <- function(pwm, threshold=0.7){
 #' @export
 #'
 
-plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL){
+plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL, linesize=1){
 
   tmp <- found_motif$dt[!is.na(whichpos)]
 
@@ -231,20 +232,12 @@ plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL){
 
   tmp$seqID <- as.numeric(factor(tmp$sequence, levels=unique(tmp[order(maxregprob)]$sequence)))
 
-  if(length(found_motif$scorematdim)>1){
-    plot_glob <- ggplot(tmp, aes(whichpos, seqID, colour=whichmotif))
-    transparency_alpha <- 0.5
-  }else{
-    plot_glob <- ggplot(tmp, aes(whichpos, seqID, colour=whichstrand))
-    transparency_alpha <- 1
-  }
-
   if(!is.null(linepos)){
     plot_glob <- plot_glob + geom_vline(xintercept = linepos)
   }
 
   plot_glob <- plot_glob +
-    geom_segment(aes(x = whichpos, y = seqID, xend = motifend, yend = seqID), size=1, alpha=transparency_alpha) +
+    geom_segment(aes(x = whichpos, y = seqID, xend = motifend, yend = seqID), size=linesize) +
     scale_color_brewer(palette = "Set1") +
     labs(x="Position in Sequence (bp)", y="Sequence / Gene") +
     theme(legend.position = "bottom")
