@@ -1,12 +1,12 @@
 #' Simulate DNA sequences with an enriched motif
 #'
-#' @param motif character; string containing the motif sequence
+#' @param motif character; string containing the motif sequence, can be upper or lower case ACGT or _
 #' @param number_sequences numeric; number of sequences to generate
 #' @param sequence_length numeric; length in bases of the sequences to be generated
 #' @param motif_position numeric; start position of the motif in the sequences,
 #' default is half the sequence length - half the motif width
 #' @param enrichment numeric; what fraction of sequences should include the motif
-#' @param jitter integer; how variable should the position of the motif be
+#' @param jitter integer; how many base pairs to randomly +/- shift the position of the motif
 #' @param highprob numeric; probability (between 0 and 1) of choosing a base when the motif has a capital/uppercase letter
 #' @param lowprob numeric; probability (between 0 and 1) of choosing a base when the motif has a lowercase letter
 #'
@@ -51,7 +51,7 @@ simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
     sample(DNA, 1, prob = prob_vector)
   }
 
-  # function to generate DNA sequence accorting to motif code given
+  # function to generate DNA sequence according to motif code given
   generate_motif_string <- function(motif){
     motif_string <- character()
     for(i in 1:nchar(motif)){
@@ -76,9 +76,17 @@ simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
   for (i in sample(1:number_sequences, round(number_sequences * enrichment))){
 
     # change motif position slightly
-    motif_position_random <- motif_position + sample(-10:10,1)
+    # careful not to sample negative and leave enough space for motif on right
+    # if jitter=0, then n:n becomes a single number and sample samples from 1:n, so skip
+    if(jitter>0){
+      motif_position_random <- sample(max(0,(motif_position-jitter)):min((motif_position+jitter), sequence_length-nchar(motif)),1)
+    }else{
+      motif_position_random <- motif_position
+    }
 
-    substr(example_sequences[i], motif_position_random+1, motif_position_random+nchar(motif)) <- generate_motif_string(motif)
+    substr(example_sequences[i], motif_position_random, motif_position_random+nchar(motif)-1) <- generate_motif_string(motif)
+  }
+
   }
 
   names(example_sequences) <- seq_along(example_sequences)
