@@ -328,6 +328,7 @@ load_sequences <- function(file, sm.rm=T, flank=150, proportion_N=0.02){
 #'
 #' @param found_motif list; The output of getmotifs()
 #' @param motif integer; Which motif to mask if there is more than one in the found_motif list.
+#' @param orderbyregprob logical; should the extracted motifs be ordered from regprob high to low
 #'
 #' @return charachter vector of DNA sequences matching the motif
 #'
@@ -335,11 +336,18 @@ load_sequences <- function(file, sm.rm=T, flank=150, proportion_N=0.02){
 #'
 #' @export
 #'
-extract_matches <- function(found_motif,motif=1){
+extract_matches <- function(found_motif, motif=1, orderbyregprob=F){
   matches <- stringr::str_sub(found_motif$seqs[found_motif$whichregs],
                    start = found_motif$whichpos,
                    end = found_motif$whichpos + found_motif$scorematdim[found_motif$whichmot] -1)[found_motif$whichmot==motif]
   matches[found_motif$whichstrand==0] <- stringi::stri_reverse(chartr("acgtACGT", "tgcaTGCA", matches[found_motif$whichstrand==0]))
+
+  names(matches) <- found_motif$whichstrand
+
+  if(orderbyregprob){
+    matches[order(found_motif$regprob[found_motif$whichregs],decreasing = T)]
+  }
+
   return(matches)
 }
 

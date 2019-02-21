@@ -4,12 +4,14 @@
 \alias{extract_matches}
 \title{Extract Motif Matches}
 \usage{
-extract_matches(found_motif, motif = 1)
+extract_matches(found_motif, motif = 1, orderbyregprob = F)
 }
 \arguments{
 \item{found_motif}{list; The output of getmotifs()}
 
 \item{motif}{integer; Which motif to mask if there is more than one in the found_motif list.}
+
+\item{orderbyregprob}{logical; should the extracted motifs be ordered from regprob high to low}
 }
 \value{
 charachter vector of DNA sequences matching the motif
