@@ -663,7 +663,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
         }
       }
 
-      cat(paste0("Alpha(s): ",paste(round(alpha,2),collapse=" "),", Motif(s): '",motif_text,"'\n"))
+      cat(paste0("Prior:",spark_bar(prior/max(prior))," Alpha(s): ",paste(round(alpha,2),collapse=" "),", Motif(s): '",motif_text,"'\n"))
     }
 
     if(updatemot==1){
