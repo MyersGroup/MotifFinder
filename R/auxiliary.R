@@ -232,6 +232,12 @@ plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL, linesize=
 
   tmp$seqID <- as.numeric(factor(tmp$sequence, levels=unique(tmp[order(maxregprob)]$sequence)))
 
+  if(length(found_motif$scorematdim)>1){
+    plot_glob <- ggplot(tmp, aes(whichpos, seqID, colour=whichmotif))
+  }else{
+    plot_glob <- ggplot(tmp, aes(whichpos, seqID, colour=whichstrand))
+  }
+
   if(!is.null(linepos)){
     plot_glob <- plot_glob + geom_vline(xintercept = linepos)
   }

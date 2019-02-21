@@ -4,7 +4,8 @@
 \alias{plot_motif_location}
 \title{Plot location of motifs in input sequences}
 \usage{
-plot_motif_location(found_motif, linepos = NULL, top_n = NULL)
+plot_motif_location(found_motif, linepos = NULL, top_n = NULL,
+  linesize = 1)
 }
 \arguments{
 \item{found_motif}{list; The output of getmotifs()}
@@ -12,6 +13,8 @@ plot_motif_location(found_motif, linepos = NULL, top_n = NULL)
 \item{linepos}{integer; position of line in plot to mark e.g. the TSS}
 
 \item{top_n}{integer; how many input sequences to plot}
+
+\item{linesize}{numeric; thickness of lines representing motif footprints}
 }
 \value{
 A ggplot2 object
