@@ -63,8 +63,8 @@ test_that("Can find Motif location when updatemot=0", {
             ourprior=rep(0.1,10),
             seed=258442)
 
-  expect_known_hash(motif_locs,"c74a705ec0")
-  expect_known_hash(motif_locs$whichpos,"5115dc46ac")
+  expect_known_hash(digest::digest(signif(motif_locs$regprobs)),"c3743f4e81")
+  expect_known_hash(motif_found[-c(10,11,19)],"38aaab842f")
 
   expect_equal(mean(motif_found$whichpos), expected = 100, tolerance=5, scale=1)
   expect_equal(mean(motif_found$bestmatch), expected = 100, tolerance=5, scale=1)
