@@ -9,13 +9,14 @@
 #' @param jitter integer; how many base pairs to randomly +/- shift the position of the motif
 #' @param highprob numeric; probability (between 0 and 1) of choosing a base when the motif has a capital/uppercase letter
 #' @param lowprob numeric; probability (between 0 and 1) of choosing a base when the motif has a lowercase letter
+#' @param randomstrand logical; should the strand of the motif be randomised (default: FALSE)
 #'
 #' @return a character vector of random DNA sequences with an enriched motif
 #'
 #' @export
 
 simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
-                                       motif_position=NULL, enrichment=0.5, jitter=10, highprob=0.85, lowprob=0.6){
+                                       motif_position=NULL, enrichment=0.5, jitter=10, highprob=0.85, lowprob=0.6, randomstrand=FALSE){
 
   # check sensible input
   stopifnot(nchar(motif) < sequence_length)
@@ -87,6 +88,9 @@ simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
     substr(example_sequences[i], motif_position_random, motif_position_random+nchar(motif)-1) <- generate_motif_string(motif)
   }
 
+  if(randomstrand){
+    tobereversed <- sample(number_sequences, round(number_sequences/2), 0.5)
+    example_sequences[tobereversed] <- sapply(example_sequences[tobereversed], function(x) stringi::stri_reverse(chartr("ATGC","TACG",x)))
   }
 
   names(example_sequences) <- seq_along(example_sequences)
