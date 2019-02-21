@@ -215,7 +215,7 @@ plot_motif_location <- function(found_motif, linepos=NULL, top_n=NULL){
   tmp <- found_motif$dt[!is.na(whichpos)]
 
   for (i in seq_along(found_motif$scorematdim)){
-    tmp[whichmotif==i, motifend := whichpos + found_motif$scorematdim[i]]
+    tmp[whichmotif==i, motifend := whichpos + found_motif$scorematdim[i] - 1]
   }
 
   tmp[,whichstrand := as.factor(whichstrand)]
