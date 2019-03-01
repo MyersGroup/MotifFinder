@@ -4,10 +4,11 @@
 \alias{findamotif}
 \title{Find the single most enriched motif in a set of DNA sequences}
 \usage{
-findamotif(seqs, len, scores = NULL, nits = 50, ntries = 1,
-  n_for_refine = 1000, prior = NULL, updateprior = 1, plen = 0.9,
-  seed = NULL, verbosity = 1, motif_rank = 1, force_mot = NULL,
-  motif_blacklist = NULL, range = 50)
+findamotif(seqs, len, scores = NULL, nits = 50, scoring_its = 5,
+  ntries = 1, n_for_refine = 1000, prior = NULL, updateprior = 1,
+  plen = 0.9, seed = NULL, verbosity = 1, motif_rank = 1,
+  force_mot = NULL, motif_blacklist = NULL, range = 50,
+  stranded_prior = F, seeding_algo = "central")
 }
 \arguments{
 \item{seqs}{a vector of strings giving the DNA sequences in which to find a motif}
@@ -39,6 +40,8 @@ findamotif(seqs, len, scores = NULL, nits = 50, ntries = 1,
 \item{motif_blacklist}{charachter vector; motifs not to use as seed motif}
 
 \item{range}{integer; range around center to check for central enrichment}
+
+\item{seeding_algo}{string; "central" or "modal"}
 }
 \value{
 List item with the following items:\cr
