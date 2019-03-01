@@ -211,15 +211,15 @@ findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,ntries=1,n_for_re
   if(verbosity>=3) print("....done")
 
   if(verbosity>=3) print("Attempting to refine....")
-  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,seed=NA,verbosity=verbosity)
+  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,seed=NA,verbosity=verbosity,stranded_prior=stranded_prior)
   if(verbosity>=3) print("....done")
 
   if(is.null(z)){
     return(NULL)
   }
 
-  if(verbosity>=3) print("Scoring regions....")
-  z2=getmotifs(z$scoremat,z$scorematdim,regs,maxwidth=max(nchar(regs)),alpha=z$alpha,incprob=0.99999,maxits=1,plen=0.2,updatemot=0,updatealpha=1,ourprior=z$prior,updateprior=0,bg=-1,seed=NA,verbosity=0)
+  if(verbosity>=1) print("Scoring regions (fixed motif) ....")
+  z2=getmotifs(z$scoremat,z$scorematdim,regs,maxwidth=max(nchar(regs)),alpha=z$alpha,incprob=0.99999,maxits=scoring_its,plen=0.2,updatemot=0,updatealpha=1,ourprior=z$prior,updateprior=1,bg=-1,seed=NA,verbosity=verbosity,stranded_prior=stranded_prior)
   if(verbosity>=3) print("....done")
 
   z2$alphas <- z$alphas

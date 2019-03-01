@@ -62,7 +62,7 @@
 #' @export
 #' @import gtools data.table
 
-getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,dt=T, allowinf=FALSE,seed=NULL,verbosity=1){
+getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,dt=T, allowinf=FALSE,seed=NULL,verbosity=1, stranded_prior=F){
   starttime=proc.time()
   its=0;
 
@@ -170,6 +170,7 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       scoremat=scorematset[starts[j]:ends[j],]
       if(verbosity>=3) print(scoremat)
       scoremat=cbind(scoremat,rep(-10000,nrow(scoremat))) #nick removed pointless maxwidth=200 setting
+
       compmat=scoremat[,c(4:1,5)]
       compmat=compmat[nrow(compmat):1,]
       if(verbosity>=3) print(paste("Beginning scoring for Motif",j))
@@ -333,11 +334,17 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(its==1){
       if(is.null(ourprior)){
         prior=rep(0.1,10)
+        prior2=prior
       }
       ###otherwise, has vector of 10 probabilities
       else{
         prior=ourprior
         prior=prior/sum(prior)
+        if(stranded_prior){
+          prior2=prior[10:1] # this assumes the priors are reversiable, which isn't always true
+        }else{
+          prior2=prior
+        }
       }
     }
     if(verbosity>=3) print("...OK...")
@@ -359,10 +366,18 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
 
     priormat=floor(priormat*10)+1
 
+    priormat2 <- priormat
+
     for(i in 1:10) priormat[priormat==i]=prior[i]
     priormat[priormat<=0]=0
     priormat[priormat>10]=0
     priormat=priormat/rowSums(priormat)/2
+
+
+    for(i in 1:10) priormat2[priormat2==i]=prior2[i]
+    priormat2[priormat2<=0]=0
+    priormat2[priormat2>10]=0
+    priormat2=priormat2/rowSums(priormat2)/2
 
     # priormat[priormat %in% 1:10] <- prior[match(priormat, 1:10, nomatch = 0)]
     # priormat[priormat<0 | priormat>10] = 0
@@ -376,11 +391,13 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     postbackward=exp(overallscores2)
     for(j in 1:length(starts)){
       priormat[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]=priormat[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]*alpha[j];
+      priormat2[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]=priormat2[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]*alpha[j];
     }
+
 
     if(verbosity>=3) print("Calculating probabilities")
     postforward=postforward*priormat
-    postbackward=postbackward*priormat
+    postbackward=postbackward*priormat2
 
     for(j in 1:length(starts)){
       temp=postforward[(nrow(newmat)*(j-1)+1):(nrow(newmat)*j),]
@@ -441,6 +458,8 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     whichstrand=whichstrand[mot==1]
     if(verbosity>=3) print("Done")
 
+    #print(table(whichpos))
+
     #######get a prior on positions
     ######update prior using sampled positions
     totals=1:length(starts)
@@ -459,10 +478,39 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
     if(verbosity>=3) print(c(alphanew,sum(alphanew)))
     whichregs=which(mot==1)
 
-    v=hist((whichpos-1)/(nchar(fullseqs[whichregs])-dimvec[whichmot]),breaks=seq(0,1,0.1),plot=FALSE)
+    if(stranded_prior){
+      strand_corrected_pos <- c(whichpos[whichstrand==1],
+                                nchar(fullseqs[whichregs][whichstrand==0])+1 - (whichpos[whichstrand==0] + dimvec[whichmot][whichstrand==0]-1))
+      strand_corrected_pos2 <- c(nchar(fullseqs[whichregs][whichstrand==1])+1 - (whichpos[whichstrand==1] + dimvec[whichmot][whichstrand==1]-1),
+                                 whichpos[whichstrand==0])
+
+      denom = c(nchar(fullseqs[whichregs][whichstrand==1]),nchar(fullseqs[whichregs][whichstrand==0])) -
+              c(dimvec[whichmot][whichstrand==1],dimvec[whichmot][whichstrand==0])
+
+      v=hist((strand_corrected_pos-1) / denom, breaks=seq(0,1,0.1),plot=FALSE)
+      v2=hist((strand_corrected_pos2-1) / denom, breaks=seq(0,1,0.1),plot=FALSE)
+    }else{
+      v=hist((whichpos-1)/(nchar(fullseqs[whichregs])-dimvec[whichmot]),breaks=seq(0,1,0.1),plot=FALSE)
+    }
+
     if(updateprior==1){
       prior=v$counts+5
       prior=prior/sum(prior)
+
+      if(stranded_prior){
+        prior2=v2$counts+5
+        prior2=prior2/sum(prior2)
+
+        # Sometimes the priors of each strand are reversiable
+        # so could be possible (future todo) to skip some of the priormat calculations
+        #if(all(prior2!=prior[10:1])){
+        #  print("Warning Priors not reversiable!")
+        #  print(prior-prior2)
+        #}
+
+      }else{
+        prior2=prior
+      }
     }
 
     ####for compatibility
