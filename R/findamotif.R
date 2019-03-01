@@ -15,6 +15,7 @@
 #' @param motif_rank integer; which rank of seed motif to use (1st seed motif, 2nd etc.)
 #' @param force_mot string; use this seed motif instead of calculated
 #' @param range integer; range around center to check for central enrichment
+#' @param seeding_algo string; "central" or "modal"
 #'
 #' @details
 #' This function identifies a single PWM from an iterative Gibbs sampler described in Altemose et al. eLife 2017. Function 2 can refine multiple motifs further, jointly.
@@ -50,7 +51,7 @@
 #' @export
 #' @import gtools
 
-findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1, motif_rank=1,force_mot=NULL,motif_blacklist=NULL,range=50){
+findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1, motif_rank=1,force_mot=NULL,motif_blacklist=NULL,range=50,stranded_prior=F, seeding_algo="central"){
 
   if (is.null(seed)){
     seed <- sample.int(2^20, 1)
@@ -64,8 +65,11 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
     scores <- rep(1,length(seqs))
   }
 
+
   if(n_for_refine>length(seqs)) n_for_refine=length(seqs)
   regs=seqs
+
+  if(seeding_algo=="central"){
   if(verbosity>=3) print("Concatenating sequences....")
   seqs=paste(seqs,collapse="")
   if(verbosity>=3) print("....done")
@@ -147,7 +151,7 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
   #####use pwm for motif refinement
   #####automatically obtain sequences without the motif
 
-  pwmstart=matrix(0.1,nrow=10,ncol=4)
+
   excess=excess[enrich>1]
   seqs=seqs[enrich>1]
   seqsc=seqsc[enrich>1]
@@ -163,12 +167,32 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
   if(verbosity>=1) print(seqs[order(-excess)[1:5]])
 
   mot = seqs[order(-excess)][!seqs[order(-excess)] %in% motif_blacklist][motif_rank]
-  if(verbosity>=1) print("Chose start motif:")
-  if(verbosity>=1) print(mot)
+
+  }else{ # use model seeding algo instead
+
+    seeds <- do.call(paste0,expand.grid(rep(list(c("A","C","T","G")),6), stringsAsFactors = F))
+
+    seeds_with_revcomp <- unique(sapply(seeds, function(x) paste0(sort(c(stri_reverse(chartr("ACGT", "TGCA", x)),x)), collapse = "|")))
+
+    seed_count <- sapply(seeds_with_revcomp, function(x) sum(grepl(x,regs)))
+
+    #seed_count <- str_count(seqs_concat,seeds_with_revcomp)
+    #seed_count <- str_count(seqs_concat,seeds)
+    #names(seed_count) <- seeds#_with_revcomp
+
+    if(verbosity>=1) print("Top 5 start motifs:")
+    print(head(sort(seed_count,T),5))
+    mot = unlist(strsplit(names(sort(seed_count,T)),"|", fixed = T))[c(T,F)]
+    mot = mot[!mot %in% motif_blacklist][motif_rank]
+  }
 
   if(!is.null(force_mot)){
     mot=force_mot
   }
+
+  if(verbosity>=1) print("Chose start motif:")
+  if(verbosity>=1) print(mot)
+
 
   if(verbosity>=3) print("Initialising....")
   mot=as.vector(unlist(strsplit(mot,"")))
@@ -178,6 +202,7 @@ findamotif=function(seqs,len,scores=NULL,nits=50,ntries=1,n_for_refine=1000,prio
   mot[mot=="T"]=4
   mot=as.double(as.vector(unlist(mot)))
 
+  pwmstart=matrix(0.1,nrow=10,ncol=4)
   for(i in 1:len) pwmstart[i,mot[i]]=1
   pwmstart=pwmstart/rowSums(pwmstart)
   logpwm=log(pwmstart)
