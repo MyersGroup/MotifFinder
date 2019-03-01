@@ -33,7 +33,7 @@ str(simulated_sequences)
 We run MotifFinder with a length slightly shorter than the known motif length.
 
 ```{r findmotif, results='hide'}
-motif_found <- findamotif(simulated_sequences, len=7)
+motif_found <- findamotif(simulated_sequences$seqs, len=7, stranded_prior = T, seed = 42)
 ```
 
 ## Plot the Motif(s) Found

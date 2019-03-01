@@ -1,7 +1,7 @@
 MotifFinder: Vignette (Tutorial)
 ================
 Daniel Wells
-2019-02-21
+2019-03-01
 
 ## Simulate Data
 
@@ -20,8 +20,14 @@ simulated_sequences <- simulate_sequences(motif="ATgTT_GtCC")
 str(simulated_sequences)
 ```
 
-    ##  Named chr [1:300] "CCTCTTTTGTATGGCCAAGGGGCGTAAAACTTAATCTCCGCTTTGCAGACTAGTGCGATTCGTGCGGCCGCTGGACCCAAGCATCCAGGCTCCCGGATTCCCTTACAAAAA"| __truncated__ ...
-    ##  - attr(*, "names")= chr [1:300] "1" "2" "3" "4" ...
+    ## List of 6
+    ##  $ seqs          : Named chr [1:300] "CCTCTTTTGTATGGCCAAGGGGCGTAAAACTTAATCTCCGCTTTGCAGACTAGTGCGATTCGTGCGGCCGCTGGACCCAAGCATCCAGGCTCCCGGATTCCCTTACAAAAA"| __truncated__ "TCGGACTCCGTTGTGCAAACGTTTGCTGATAAGCCCGACCAAGCACTTCAGGAGTTAGTAAGACACATTGGCGAGCATAAGGCAGTTAGTAATAGGGACGAACATAAACGT"| __truncated__ "AGGTCACTATAGAGAATCTAATCCGATTGGGGTACATAATGCTCTTACGATTGGTTTGCCTACAAGTATCTACCTTGCACAGCACTCAAACTCTTACTAAAAGCACGACTA"| __truncated__ "TGTAACTCAGTACATCTACCGGGGTCTATACAAGCCTTCGGGTCATTATTAGGTAGGCCGGCCAATGGGACAAAGAATCTCTAACGCAGGCAATCGCTCGAGGCCTGGTCC"| __truncated__ ...
+    ##   ..- attr(*, "names")= chr [1:300] "1" "2" "3" "4" ...
+    ##  $ whichreg      : int [1:150] 226 94 252 273 147 117 210 220 21 251 ...
+    ##  $ whichpos_s1   : int [1:150] 92 97 90 105 98 95 105 86 106 92 ...
+    ##  $ whichpos      : num [1:150] 92 95 90 87 98 97 105 86 86 100 ...
+    ##  $ whichrevstrand: int [1:150] 21 135 77 17 291 253 280 20 109 284 ...
+    ##  $ truemotif     : chr "ATgTT_GtCC"
 
 # Run MotifFinder
 
@@ -29,7 +35,7 @@ We run MotifFinder with a length slightly shorter than the known motif
 length.
 
 ``` r
-motif_found <- findamotif(simulated_sequences, len=7)
+motif_found <- findamotif(simulated_sequences$seqs, len=7, stranded_prior = T, seed = 42)
 ```
 
 ## Plot the Motif(s) Found
