@@ -73,6 +73,9 @@ simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
     return(paste(motif_string, collapse = ""))
   }
 
+  true_pos <- integer()
+  whichreg <- integer()
+
   # add enriched motif
   for (i in sample(1:number_sequences, round(number_sequences * enrichment))){
 
@@ -85,16 +88,27 @@ simulate_sequences <- function(motif, number_sequences=300, sequence_length=200,
       motif_position_random <- motif_position
     }
 
+    whichreg <- c(whichreg,i)
+    true_pos <- c(true_pos, motif_position_random)
+
     substr(example_sequences[i], motif_position_random, motif_position_random+nchar(motif)-1) <- generate_motif_string(motif)
   }
 
+  whichpos = true_pos
+
+  tobereversed = integer()
+
   if(randomstrand){
-    tobereversed <- sample(number_sequences, round(number_sequences/2), 0.5)
+    tobereversed <- sample(x=number_sequences, size=round(number_sequences/2))
+    #tobereversed <- sample(number_sequences, round(number_sequences/2), 0.5) # this induces duplicates!
     example_sequences[tobereversed] <- sapply(example_sequences[tobereversed], function(x) stringi::stri_reverse(chartr("ATGC","TACG",x)))
+
+    whichpos[whichreg %in% tobereversed] = sequence_length + 1 - (true_pos[whichreg %in% tobereversed] + nchar(motif) - 1)
   }
 
   names(example_sequences) <- seq_along(example_sequences)
 
-  return(example_sequences)
+
+  return(list("seqs"=example_sequences,'whichreg'=whichreg,'whichpos_s1'=true_pos,'whichpos'=whichpos,'whichrevstrand'=tobereversed,'truemotif'=motif))
 
 }
