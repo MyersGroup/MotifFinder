@@ -509,3 +509,84 @@ spark_bar <- function(x, safe = TRUE) {
 
   structure(paste0(chars, collapse = ""), class = "spark")
 }
+
+
+#' Confusion Matrix
+#'
+#' @param found_motif list; The output of getmotifs() or findamotif()
+#' @param simulated_sequences list; Output of simulate_sequences
+#' @param complement logical; Did findamotif return the complemented version of the simulated motif
+#' Change this if you get 0 true positives
+#'
+#' @return List of confusion matricies, one for overall and one each for each strand
+#'
+#' @details Note that for a positive match, all of the sequence, strand and position of the motif.
+#' A mismatch in any of these will exclude a predicted +ve true +ve. However the total number of true -ve does not
+#' count each position as one negative but each sequence which does not contain an added motif.
+#'
+#' Also note that there could be matches to your simulated motif by chance in random sequence, and as the motif
+#' generation is probabilistic, some sequences with the motif added will not be a good match to the consensus motif.
+#'
+#' @export
+#'
+
+cfm <- function(motif_found, simulated_sequences, complement=F){
+
+  simulated_sequences$strand <- (!1:length(simulated_sequences$seqs) %in% simulated_sequences$whichrevstrand)*1
+
+  if(complement){
+    motif_found$whichstrand[motif_found$whichstrand==0] <- -1
+    motif_found$whichstrand[motif_found$whichstrand==1] <- 0
+    motif_found$whichstrand[motif_found$whichstrand==-1] <- 1
+  }
+
+  reg_pos_s <- paste0(simulated_sequences$whichreg,"_",
+                      simulated_sequences$whichpos,"_",
+                      simulated_sequences$strand[simulated_sequences$whichreg])
+
+  pre_pos_s <- paste0(motif_found$whichregs,"_",
+                      motif_found$whichpos,"_",
+                      motif_found$whichstrand)
+
+  trueP <- sum(pre_pos_s %in% reg_pos_s)
+
+  falseP <- sum(!pre_pos_s %in% reg_pos_s)
+
+  totalP <- length(reg_pos_s)
+
+  falseN = totalP - trueP
+
+  trueN <- length(simulated_sequences$seqs)*(nchar(simulated_sequences$seqs[[1]])-nchar(simulated_sequences$truemotif))*2 - totalP - falseP
+
+
+  #####
+
+
+  trueP_s1 <- sum(pre_pos_s
+                  %in%
+                    reg_pos_s[simulated_sequences$strand[simulated_sequences$whichreg]==1])
+
+  totalP_s1 <- sum(simulated_sequences$strand[simulated_sequences$whichreg]==1) # == sum(grepl("_1$",reg_pos_s))
+
+  falseN_s1 = totalP_s1 - trueP_s1 # we do make predictions of motif for some of these sequences, but not at the right position
+
+  falseP_s1 <- sum(!motif_found$whichregs %in% simulated_sequences$whichrevstrand) - trueP_s1  # i.e. total predicted + that are also strand==1 (!=0), - correct
+
+  trueN_s1 <- sum(simulated_sequences$strand==1)*(nchar(simulated_sequences$seqs[[1]])-nchar(simulated_sequences$truemotif))*2 - totalP_s1 - falseP_s1 # should == total pred -ve, - FalseN_s1
+
+  #####
+
+  pred_neg <- c(1:1000)[!1:1000 %in% motif_found$whichregs]
+  pred_neg_s1 <- pred_neg[!pred_neg %in% simulated_sequences$whichrevstrand]
+  pred_pos_s1 <- motif_found$whichregs[!motif_found$whichregs %in% simulated_sequences$whichrevstrand]
+
+  conf_mat_dimnames <- list(c("Pred +","Pred -"),c("True +","True -"))
+
+  s1=matrix(c(trueP_s1, falseN_s1, falseP_s1, trueN_s1), ncol=2, dimnames = conf_mat_dimnames)
+  overall=matrix(c(trueP, falseN, falseP, trueN), ncol=2, dimnames = conf_mat_dimnames)
+  s0 = overall-s1
+
+  return(list("overall"=overall,
+              "s1"=s1,
+              "s0"=s0))
+}
