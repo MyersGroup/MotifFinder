@@ -26,7 +26,7 @@ motif_found <- findamotif(simulated_sequences, len=7)
 ggseqlogo::ggseqlogo(get_PWM(motif_found))
 ```
 
-![](vignettes/vignette_files/figure-markdown_github/plotlogo-1.png)
+![](vignettes/vignette_files/figure-gfm/plotlogo-1.png)
 
 For more detailed examples of how to use this package please see the [vignette](vignettes/vignette.md).
 
