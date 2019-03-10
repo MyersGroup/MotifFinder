@@ -372,7 +372,7 @@ plot_tomtom_match <- function(query_motif=NULL, tomtom_match=NULL, titles=NULL, 
   i=1
 
   # Download db motif
-  db_motif <- download_PWM(tomtom_match[i]$Target.ID)
+  db_motif <- download_PWM(tomtom_match[i]$Target_ID)
   db_pwm <- t(db_motif$pwm)
 
   if(tomtom_match[i]$Orientation=="-"){
@@ -387,7 +387,7 @@ plot_tomtom_match <- function(query_motif=NULL, tomtom_match=NULL, titles=NULL, 
   # initialise padding to 0
   db_padd <- dn_padd <- db_padd_e <- dn_padd_e  <- 0
 
-  offset <- tomtom_match[i]$Optimal.offset
+  offset <- tomtom_match[i]$Optimal_offset
 
   # calculate padding
   if(!reverse_c){
@@ -425,14 +425,14 @@ plot_tomtom_match <- function(query_motif=NULL, tomtom_match=NULL, titles=NULL, 
 
   if(!is.null(titles)){
     db_title <- titles[i]
-  }else if(db_motif$name==tomtom_match[i]$Target.ID){
+  }else if(db_motif$name==tomtom_match[i]$Target_ID){
     db_title <- strsplit(db_motif$name,"_")[[1]][[1]]
   }else{
-    db_title <- paste(db_motif$name, tomtom_match[i]$Target.ID)
+    db_title <- paste(db_motif$name, tomtom_match[i]$Target_ID)
   }
 
   names(pwm_list) <- c("Tomtom Match","Denovo")
-  #paste("MotifFinder Denovo",tomtom_match[i]$X.Query.ID,tomtom_match[i]$side)
+  #paste("MotifFinder Denovo",tomtom_match[i]$Query_ID,tomtom_match[i]$side)
 
   #print(ggseqlogo(pwm_list,ncol=1,scales = "free_y"))
 
