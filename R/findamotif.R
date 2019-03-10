@@ -4,7 +4,6 @@
 #' @param len length of motif to find (min=4)
 #' @param scores a set of regional scores giving weights; e.g. ChIP-Seq enrichment values
 #' @param nits number of iterations used for motif refinement
-#' @param ntries usually leave at default, number of motifs to be attempted from list of possible starts
 #' @param plen a parameter setting the geometric prior on how long each motif found should be. plen=0.05 corresponds to a mean length of 20bp and is the default. Setting plen large penalises longer motifs more
 #' @param n_for_refine the top n_for_refine scoring regions only are used for motif refinement
 #' @param prior a vector of length 10 probabilities giving the initial probability of a motif being found across different parts of the sequence from start:end. If left unspecified the initial prior is set at uniform and the algorithm tries to learn where motifs are, e.g. if they are centrally enriched.
@@ -13,9 +12,8 @@
 #' @param verbosity integer; How verbose should this function be? 0=silent, 3=everything.
 #' @param motif_blacklist charachter vector; motifs not to use as seed motif
 #' @param motif_rank integer; which rank of seed motif to use (1st seed motif, 2nd etc.)
-#' @param force_mot string; use this seed motif instead of calculated
 #' @param range integer; range around center to check for central enrichment
-#' @param seeding_algo string; "central" or "modal"
+#' @param motif_seed string; "central", "modal", "random", or a string e.g. "ACGTGAC"
 #'
 #' @details
 #' This function identifies a single PWM from an iterative Gibbs sampler described in Altemose et al. eLife 2017. Function 2 can refine multiple motifs further, jointly.
@@ -51,7 +49,7 @@
 #' @export
 #' @import gtools
 
-findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,ntries=1,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1, motif_rank=1,force_mot=NULL,motif_blacklist=NULL,range=50,stranded_prior=F, seeding_algo="central"){
+findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,n_for_refine=1000,prior=NULL,updateprior=1,plen=0.9,seed=NULL,verbosity=1, motif_rank=1,motif_blacklist=NULL,range=50,stranded_prior=F, motif_seed="central",conv_t=0, conv_n=200){
 
   if (is.null(seed)){
     seed <- sample.int(2^20, 1)
@@ -69,7 +67,7 @@ findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,ntries=1,n_for_re
   if(n_for_refine>length(seqs)) n_for_refine=length(seqs)
   regs=seqs
 
-  if(seeding_algo=="central"){
+  if(motif_seed=="central"){
   if(verbosity>=3) print("Concatenating sequences....")
   seqs=paste(seqs,collapse="")
   if(verbosity>=3) print("....done")
@@ -168,9 +166,13 @@ findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,ntries=1,n_for_re
 
   mot = seqs[order(-excess)][!seqs[order(-excess)] %in% motif_blacklist][motif_rank]
 
-  }else{ # use model seeding algo instead
+  }else if(motif_seed=="random"){
 
-    seeds <- do.call(paste0,expand.grid(rep(list(c("A","C","T","G")),6), stringsAsFactors = F))
+    mot = paste0(sample(c("A","C","T","G"), T, size = len), collapse = "")
+
+  }else if(motif_seed=="modal"){  # use modal seeding algo instead
+
+    seeds <- do.call(paste0,expand.grid(rep(list(c("A","C","T","G")),len), stringsAsFactors = F))
 
     seeds_with_revcomp <- unique(sapply(seeds, function(x) paste0(sort(c(stri_reverse(chartr("ACGT", "TGCA", x)),x)), collapse = "|")))
 
@@ -184,15 +186,14 @@ findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,ntries=1,n_for_re
     print(head(sort(seed_count,T),5))
     mot = unlist(strsplit(names(sort(seed_count,T)),"|", fixed = T))[c(T,F)]
     mot = mot[!mot %in% motif_blacklist][motif_rank]
-  }
-
-  if(!is.null(force_mot)){
-    mot=force_mot
+  }else{
+    mot = motif_seed
   }
 
   if(verbosity>=1) print("Chose start motif:")
   if(verbosity>=1) print(mot)
 
+  chosen_seed = mot
 
   if(verbosity>=3) print("Initialising....")
   mot=as.vector(unlist(strsplit(mot,"")))
@@ -225,6 +226,8 @@ findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,ntries=1,n_for_re
   z2$alphas <- z$alphas
 
   z2$seed <- as.integer(seed)
+
+  z2$motif_seed <- chosen_seed
 
   return(z2)
 
