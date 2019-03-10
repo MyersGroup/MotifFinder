@@ -212,7 +212,7 @@ findamotif=function(seqs,len,scores=NULL,nits=50,scoring_its=5,n_for_refine=1000
   if(verbosity>=3) print("....done")
 
   if(verbosity>=3) print("Attempting to refine....")
-  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,seed=NA,verbosity=verbosity,stranded_prior=stranded_prior)
+  z=getmotifs(logpwm,length(logpwm[,1]),seqtemp,maxwidth=max(nchar(seqtemp)),alpha=0.5,incprob=0.99999,maxits=nits,plen=plen,updatemot=1,updatealpha=1,ourprior=prior,bg=-1,updateprior=updateprior,seed=NA,verbosity=verbosity,stranded_prior=stranded_prior, conv_n=conv_n, conv_t=conv_t)
   if(verbosity>=3) print("....done")
 
   if(is.null(z)){

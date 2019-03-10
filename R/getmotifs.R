@@ -62,7 +62,7 @@
 #' @export
 #' @import gtools data.table
 
-getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,dt=T, allowinf=FALSE,seed=NULL,verbosity=1, stranded_prior=F){
+  getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.99999,maxits=30,plen=0.05,updatemot=1,updatealpha=1,ourprior=NULL,updateprior=1,bg=-1,dt=T, allowinf=FALSE,seed=NULL,verbosity=1, stranded_prior=F, conv_t=0.05, conv_n=200){
   starttime=proc.time()
   its=0;
 
@@ -800,6 +800,13 @@ getmotifs=function(scorematset,dimvec,seqs,maxwidth=800,alpha=0.5,incprob=0.9999
       alpha=alpha[length(fullseqs)*alpha>10]
     }
     }
+
+    # determine if convergence critera has been met
+    if(nrow(alphas)>conv_n &
+       var(tail(alphas,conv_n)) < conv_t){
+      break
+    }
+
 
   } #ends iteration while loop
 
