@@ -19,6 +19,5 @@ Download PWM from Jaspar or Hocomoco
 }
 \examples{
 download_PWM("ALX1_MOUSE.H11MO.0.B")
-download_PWM("MA0506.1")
 
 }

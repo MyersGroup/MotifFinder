@@ -74,7 +74,6 @@ export_PWM <- function(pwm, name, file, format="meme", complement=FALSE){
 #'
 #' @examples
 #' download_PWM("ALX1_MOUSE.H11MO.0.B")
-#' download_PWM("MA0506.1")
 #'
 #' @import jsonlite
 #' @export
