@@ -5,7 +5,7 @@ set.seed(42)
 simulated_sequences <- simulate_sequences("ATgTT_GtCC", motif_position = 50, jitter = 0)
 
 # run MotifFinder
-motif_found <- findamotif(simulated_sequences$seqs, len=7, seed=258442, stranded_prior = T, seeding_algo = "modal")
+motif_found <- findamotif(simulated_sequences$seqs, len=7, seed=258442, stranded_prior = T, motif_seed = "modal")
 
 test_that("Prior is highest in correct bins", {
   expect_gte(min(rank(motif_found$prior)[8]), 10)
@@ -34,12 +34,12 @@ test_that("Extraction nhar=motif length", {
 test_that("Warning when no motif exists", {
 simulated_sequences <- simulate_sequences("_", sequence_length = 100)
 
-expect_warning(findamotif(simulated_sequences$seqs, len=7, seed=258442, stranded_prior = T, seeding_algo = "modal"), "No motifs remaining")
+expect_warning(findamotif(simulated_sequences$seqs, len=7, seed=258442, stranded_prior = T, motif_seed = "random"), "No motifs remaining")
 })
 
 test_that("Warning when motif too long", {
 simulated_sequences <- simulate_sequences("AGCAGCTAGCTAGCTAAGCATCAGCGAGCAGCCACAGCACAGCATCAGCTAGTCGATATA", sequence_length = 100)
 
-expect_warning(findamotif(simulated_sequences$seqs, len=7, seed=258442, seeding_algo = "modal"), "No motifs remaining")
+expect_warning(findamotif(simulated_sequences$seqs, len=7, seed=258442, motif_seed = "modal"), "No motifs remaining")
 })
 
