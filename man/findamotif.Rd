@@ -5,10 +5,10 @@
 \title{Find the single most enriched motif in a set of DNA sequences}
 \usage{
 findamotif(seqs, len, scores = NULL, nits = 50, scoring_its = 5,
-  ntries = 1, n_for_refine = 1000, prior = NULL, updateprior = 1,
-  plen = 0.9, seed = NULL, verbosity = 1, motif_rank = 1,
-  force_mot = NULL, motif_blacklist = NULL, range = 50,
-  stranded_prior = F, seeding_algo = "central")
+  n_for_refine = 1000, prior = NULL, updateprior = 1, plen = 0.9,
+  seed = NULL, verbosity = 1, motif_rank = 1,
+  motif_blacklist = NULL, range = 50, stranded_prior = F,
+  motif_seed = "central", conv_t = 0, conv_n = 200)
 }
 \arguments{
 \item{seqs}{a vector of strings giving the DNA sequences in which to find a motif}
@@ -18,8 +18,6 @@ findamotif(seqs, len, scores = NULL, nits = 50, scoring_its = 5,
 \item{scores}{a set of regional scores giving weights; e.g. ChIP-Seq enrichment values}
 
 \item{nits}{number of iterations used for motif refinement}
-
-\item{ntries}{usually leave at default, number of motifs to be attempted from list of possible starts}
 
 \item{n_for_refine}{the top n_for_refine scoring regions only are used for motif refinement}
 
@@ -35,13 +33,11 @@ findamotif(seqs, len, scores = NULL, nits = 50, scoring_its = 5,
 
 \item{motif_rank}{integer; which rank of seed motif to use (1st seed motif, 2nd etc.)}
 
-\item{force_mot}{string; use this seed motif instead of calculated}
-
 \item{motif_blacklist}{charachter vector; motifs not to use as seed motif}
 
 \item{range}{integer; range around center to check for central enrichment}
 
-\item{seeding_algo}{string; "central" or "modal"}
+\item{motif_seed}{string; "central", "modal", "random", or a string e.g. "ACGTGAC"}
 }
 \value{
 List item with the following items:\cr
