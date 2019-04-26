@@ -65,6 +65,23 @@ export_PWM <- function(pwm, name, file, format="meme", complement=FALSE){
 
 }
 
+
+#' Read Meme format Position-Weight Matrix to file
+#'
+#' @param file string; filename including path and extension
+#'
+#' @return list of length 2, a pwm and a name of motif
+#'
+#' @export
+
+read_meme <- function(file){
+  pwm <- as.matrix(fread(file, skip = 12))
+  colnames(pwm) <- c("A","C","G","T")
+  name <- read.table(file, skip = 8, nrows = 1, stringsAsFactors = F)$V2
+  return(list("pwm"=pwm, "name"=name))
+}
+
+
 #' Download PWM from Jaspar or Hocomoco
 #'
 #' @param id string; The ID of the motif to download
@@ -371,7 +388,12 @@ plot_tomtom_match <- function(query_motif=NULL, tomtom_match=NULL, titles=NULL, 
   i=1
 
   # Download db motif
-  db_motif <- download_PWM(tomtom_match[i]$Target_ID)
+  if(grepl("LOCAL",tomtom_match[i]$Target_ID)){
+    db_motif <- read_meme(gsub("LOCAL","",tomtom_match[i]$Target_ID))
+  }else{
+    db_motif <- download_PWM(tomtom_match[i]$Target_ID)
+  }
+
   db_pwm <- t(db_motif$pwm)
 
   if(tomtom_match[i]$Orientation=="-"){
