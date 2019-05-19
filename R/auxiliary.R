@@ -154,7 +154,7 @@ pcm2pwm <- function(pcm, pseudocount=NULL){
 #' TRUE will only work if the submotif is itself a pwm rather than a generic kernal.
 #'
 #' @return score of submotif being present in motif
-#'
+#' @export
 #'
 submotif <- function(motif, submotif=rbind(c(0,1,0,0),c(0,0,1,0)), ispcm=FALSE, probabilistic=TRUE){
   if(ispcm){
