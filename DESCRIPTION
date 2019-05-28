@@ -1,6 +1,6 @@
 Package: MotifFinder
 Title: A Bayesian, De Novo, Joint Motif Finder
-Version: 1.0
+Version: 1.1
 Authors@R: c(person("Simon", "Myers", email = "myers@stats.ox.ac.uk", role = c("aut")), person("Nicholas", "Altemose", email = "", role = c("aut")), person("Daniel", "Wells", email = "wells@stats.ox.ac.uk", role = c("com","cre")))
 Description: If you use this program, please cite Altemose et al. eLife 2017.
 Depends: R (>= 3.4.0)
