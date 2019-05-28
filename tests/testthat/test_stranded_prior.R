@@ -32,9 +32,10 @@ test_that("Extraction nhar=motif length", {
 
 
 test_that("Warning when no motif exists", {
-simulated_sequences <- simulate_sequences("_", sequence_length = 100)
+  set.seed(42)
+  simulated_sequences <- simulate_sequences("_", sequence_length = 100)
 
-expect_warning(findamotif(simulated_sequences$seqs, len=7, seed=258442, stranded_prior = T, motif_seed = "random"), "No motifs remaining")
+  expect_warning(findamotif(simulated_sequences$seqs, len=7, seed=258443, stranded_prior = T, motif_seed = "random"), "No motifs remaining")
 })
 
 test_that("Warning when motif too long", {

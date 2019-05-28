@@ -6,10 +6,6 @@ simulated_sequences <- simulate_sequences("ATgTT_GtCC", number_sequences = 300, 
                                           motif_position = NULL, enrichment = 0.5, jitter = 10, highprob = 0.85,
                                           lowprob = 0.6)
 
-test_that("Simulated sequences are exactly the same, given seed & parameters above", {
-  expect_known_hash(simulated_sequences,"cc0aac80bb")
-})
-
 test_that("Simulated sequence lengths are correct", {
   expect_true(all(nchar(simulated_sequences$seqs)==200))
   expect_equal(length(simulated_sequences$seqs),300)
@@ -39,16 +35,18 @@ test_that("Simulated sequence indexes are within range", {
 # run MotifFinder
 motif_found <- findamotif(simulated_sequences$seqs, len=7, seed=258442)
 
-test_that("results are exactly the same, given seed's above", {
-  expect_known_hash(motif_found$prior,"a5edbb6d84")
-  expect_known_hash(motif_found$scoremat,"66188dcb67")
-  expect_known_hash(digest::digest(signif(motif_found$regprobs)),"897ecde16f")
+test_that("Ranges looks ok", {
+  expect_lte(min(motif_found$prior), 1)
+  expect_gte(min(motif_found$prior), 0)
+  expect_true(all(rowSums(exp(motif_found$scoremat)) == 1))
+  expect_lte(min(motif_found$regprobs), 1)
+  expect_gte(min(motif_found$regprobs), 0)
   expect_true(all(motif_found$beststrand %in% c(0,1)))
 })
 
 
 test_that("Precision and recall are ok", {
-  conf_mat <- cfm(motif_found, simulated_sequences)$overall
+  conf_mat <- cfm(motif_found, simulated_sequences, complement = T)$overall
   expect_gt((conf_mat/colSums(conf_mat)[1])[1,1], 0.5)
   expect_lt((conf_mat/rowSums(conf_mat)[1])[1,2], 0.5)
 })
@@ -80,10 +78,11 @@ test_that("alpha in expected range (given seed)", {
 
 test_that("Prior is highest in center", {
   expect_gte(min(rank(motif_found$prior)[5:6]), 9)
+  expect_gt(sum(motif_found$prior[c(5,6)]),0.6)
 })
 
 test_that("Motif is found", {
-  expect_equal(pwm2text(motif_found$scoremat, threshold = 0.7), "ATgTT_GtCC")
+  expect_equal(pwm2text(motif_found$scoremat, threshold = 0.7), "GGaC_AacAT")
 })
 
 test_that("Can find Motif location when updatemot=0", {
@@ -95,7 +94,7 @@ test_that("Can find Motif location when updatemot=0", {
             ourprior=rep(0.1,10),
             seed=258442)
 
-  expect_known_hash(digest::digest(signif(motif_locs$regprobs)),"6960bc7e01")
+  expect_equal(pwm2text(motif_locs$scoremat, threshold = 0.7), "GGaC_AacAT")
 
   expect_equal(mean(motif_found$whichpos), expected = 100, tolerance=5, scale=1)
 })
